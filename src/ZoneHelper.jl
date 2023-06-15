@@ -21,18 +21,18 @@ function iliadImageData(pg::Cite2Urn, dse = nothing)
     push!(finalcoords, parse(Float16, topcoords[1]))
     push!(finalcoords, parse(Float16,topcoords[2]))
     # Get the max width
-    widths = Float64[]
-    for i in eachindex(iliadtext)
-        imgStats = imagesfortext(iliadtext[i], dserecords)
+    widths = Float16[]
+    for texturn in iliadtext
+        imgStats = imagesfortext(texturn, dserecords)
         coords = split(subref(imgStats[1]), ",")
-        push!(widths, parse(Float64,coords[3]))
+        push!(widths, parse(Float16,coords[3]))
     end
 
     
     totalWidth = maximum(widths)
 
     # Get max height from difference of bottom and top y coords
-    totalHeight = (parse(Float16, bottomcoords[2]) + parse(Float64, bottomcoords[4])) - parse(Float64, topcoords[2])  
+    totalHeight = (parse(Float16, bottomcoords[2]) + parse(Float16, bottomcoords[4])) - parse(Float16, topcoords[2])  
     # Push height and width to result vector
     push!(finalcoords, totalWidth)
     push!(finalcoords, totalHeight)
@@ -77,19 +77,25 @@ function scholiaZonesVerso(pg::Cite2Urn, dse = nothing)
     else 
         dse
     end
-
+    # gather info on page
     iliadData = iliadImageData(pg)
     alltext = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA015VN_0517@0.2132,0.1051,0.6361,0.6766")), ",")
     alltext = map(x->parse(Float16, x), alltext)
 
     text = textsforsurface(hmt_codices()[6].pages[33].urn, dserecords)
     imscholia = filter(txt->startswith(workcomponent(txt), "tlg5026.msAim"), text)
+    # Set immaxwidth to 0.055 as default if no imscholia are on the page
+    if isempty(imscholia)
+        immaxwidth = 0.055
+    end
+    # Find max width of imscholia to bridge gap between exterior and text zone
     imwidths = Float16[]
     for i in eachindex(imscholia)
         imgStats = imagesfortext(imscholia[i], dserecords)
         coords = split(subref(imgStats[1]), ",")
-        push!(imwidths, parse(Float64,coords[3]))
+        push!(imwidths, parse(Float16,coords[3]))
     end
+    # Calculate zone data
     immaxwidth = maximum(imwidths)
     htop = iliadData[2] - alltext[2]
     hbot = alltext[4] - (iliadData[4] + htop)
@@ -102,5 +108,16 @@ function scholiaZonesVerso(pg::Cite2Urn, dse = nothing)
 
 end
 
+
+"""Get the proposed scholia zones of a recto or verso page. 
+Finds out whether a page is verso or recto and then calls helper functions
+"""
+function getZones(pg::Cite2Urn)
+    if endswith(pg.urn, "r")
+        scholiaZonesRecto(pg)
+    elseif endswith(pg.urn, "v")
+        scholiaZonesVerso(pg)
+    end
+end
 
 

@@ -1,5 +1,3 @@
-module MSPageLayout
-
 using HmtArchive
 using HmtArchive.Analysis
 using CitablePhysicalText
@@ -7,13 +5,14 @@ using CitableObject
 using CitableText
 using CitableImage
 using CitableBase
+using JuMP
+using HiGHS
 
 using Documenter
 using DocStringExtensions
 
-export iliadImageData
-
-include("ZoneHelper.jl")
 include("TextDataHelper.jl")
+include("ZoneHelper.jl")
 
-end # module MSPageLayout
+
+model = Model(HiGHS.Optimizer)
