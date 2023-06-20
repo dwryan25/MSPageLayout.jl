@@ -48,7 +48,8 @@ function getCentroidPair(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection
     sCentroid = getSchCentroid(scholiaurn, dse)
     #when calculating x1,x2,y1,y2: x1,y1 is always text box and x2,y2 is scholia
     return [tCentroid[1], sCentroid[1], tCentroid[2], sCentroid[2]]
-end
+en
+d
 
 function centroidDistance(centroidPair::Vector{Vector{Float16}})
     x1 = centroidPair[1][1]
