@@ -36,8 +36,65 @@ function getTextCentroid(urn::CtsUrn, dse::DSECollection)
     return [centroidx, centroidy]
 end
 
+function getCentroidPair(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection)
+    texturn = pair[1][2]
+    scholiaurn = pair[1][1]
+
+    if occursin("-", texturn.urn)
+        touse = split(texturn.urn, "-")[1]
+        texturn = CtsUrn(touse)
+    end
+    tCentroid = getTextCentroid(texturn, dse)
+    sCentroid = getSchCentroid(scholiaurn, dse)
+    #when calculating x1,x2,y1,y2: x1,y1 is always text box and x2,y2 is scholia
+    return [tCentroid[1], sCentroid[1], tCentroid[2], sCentroid[2]]
+end
+
+function centroidDistance(centroidPair::Vector{Vector{Float16}})
+    x1 = centroidPair[1][1]
+    x2 = centroidPair[2][1]
+    y1 = centroidPair[1][2]
+    y2 = centroidPair[2][2]
+
+    xd = abs(x2 - x1)
+    yd = abs(y2 - y1)
+    xandy = xd^2 + yd^2
+    dist = sqrt(xandy)
+    return dist
+end
 
 function getSchArea(xywh:: Vector{Float16})
     area = xywh[3] * xywh[4] 
     return area
 end 
+
+function getAllCentroidPairs(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
+    centroids = Vector{Float16}[]
+    for pair in pairlist 
+        push!(centroids, getCentroidPair(pair, dse))
+    end
+
+    return centroids
+end
+
+function getPairDimensions(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection)
+    texturn = pair[1][2]
+    scholiaurn = pair[1][1]
+
+    if occursin("-", texturn.urn)
+        touse = split(texturn.urn, "-")[1]
+        texturn = CtsUrn(touse)
+    end
+    imgUrn = imagesfortext(texturn, dse)
+    imgData = split(subref(imgUrn[1]), ",")
+    imgData = map(x->parse(Float16, x), imgData)
+
+    schimg = imagesfortext(scholiaurn, dse)
+
+end
+
+function pairsDimensions(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
+    for pair in pairlist
+        push!(dimensions, getPairDimensions(pair, dse))
+    end
+end

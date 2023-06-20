@@ -44,7 +44,7 @@ end
 later be applied to all pages when the appropriate images are archived
 Page 70 image urn: urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.1533,0.09696,0.6511,0.7725
 """
-function scholiaZonesRecto(pg::Cite2Urn, dse= nothing)
+function scholiaZonesRecto(pg::Cite2Urn; dse= nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
@@ -71,7 +71,7 @@ end
 and will apply to all pages when the appropriate images are archived.
 page 15verso surface urn: urn:cite2:hmt:vaimg.2017a:VA015VN_0517
 """
-function scholiaZonesVerso(pg::Cite2Urn, dse = nothing)
+function scholiaZonesVerso(pg::Cite2Urn; dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
@@ -102,7 +102,7 @@ function scholiaZonesVerso(pg::Cite2Urn, dse = nothing)
     topzone = [alltext[1], alltext[2], alltext[3], htop]
     extzone = [alltext[1], iliadData[2], alltext[3] - (iliadData[3] + immaxwidth), iliadData[4]]
     bottomzone = [alltext[1], iliadData[2]+iliadData[4], alltext[3], hbot]
-
+    # order goes top, exterior, bottom
     allzonedata = [topzone, extzone, bottomzone]
     return allzonedata
 
@@ -112,11 +112,16 @@ end
 """Get the proposed scholia zones of a recto or verso page. 
 Finds out whether a page is verso or recto and then calls helper functions
 """
-function getZones(pg::Cite2Urn)
+function getZones(pg::Cite2Urn; dse = nothing)
+    dserecords = if isnothing(dse)
+        hmt_dse()[1]
+    else 
+        dse
+    end
     if endswith(pg.urn, "r")
-        scholiaZonesRecto(pg)
+        scholiaZonesRecto(pg, dse = dserecords)
     elseif endswith(pg.urn, "v")
-        scholiaZonesVerso(pg)
+        scholiaZonesVerso(pg, dse = dserecords)
     end
 end
 
