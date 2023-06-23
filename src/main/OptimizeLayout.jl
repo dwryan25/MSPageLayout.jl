@@ -6,7 +6,8 @@ using CitableText
 using CitableImage
 using CitableBase
 using JuMP
-using HiGHS
+using Ipopt
+using DataFrames
 
 using Documenter
 using DocStringExtensions
@@ -68,10 +69,10 @@ y2 = centroidlist[1:n][4]
 #---------------------------------------->
 @variable(model, begin
     #centroid data
-    x1 >= 0
-    x2 >= 0
-    y1 >= 0
-    y2 >= 0
+    x1 >= 0 #iliad text box x centroid
+    x2 >= 0 #scholia text box x centroid
+    y1 >= 0 #iliad text box y centroid
+    y2 >= 0 #scholia text box y centroid
     #dimensional data for iliad text
     x >= 0
     y >= 0

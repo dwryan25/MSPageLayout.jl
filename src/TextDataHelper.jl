@@ -2,7 +2,12 @@
 """ Returns a vector of all the main scholia on a page and their
 matching lines. 
 """
-function findPairs(pg::Cite2Urn, dse::DSECollection)
+function findPairs(pg::Cite2Urn; dse = dse)
+    dse = if isnothing(dse)
+        hmt_dse()[1]
+    else 
+        dse
+    end
     idx = hmt_commentary()[1]
     text = textsforsurface(pg, dse)
     pairs = Vector{Tuple{CtsUrn, CtsUrn}}[]
