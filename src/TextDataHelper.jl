@@ -43,7 +43,7 @@ function getTextCentroid(urn::CtsUrn, dse::DSECollection)
     return [centroidx, centroidy]
 end
 """Parses a single pair to retrieve the centroid value of each pair.
-Returns data in the format [x1, y2, y1, y2]. x1 and y1 being the iliad text box, x2 and y2 
+Returns data in the format [x1, x2, y1, y2]. x1 and y1 being the iliad text box, x2 and y2 
 being the scholia text box.
 """
 function getCentroidPair(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection)
@@ -111,6 +111,7 @@ function getPairDimensions(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollecti
     #order is always text and then scholia
     return [textimgData, schimgData]
 end
+
 """Streamlines the dimensional data of each text box into 4 vectors for main text and 
 4 vectors for scholia text such that the dimensions of the ith box are specified by x[i],
 y[i], w[i], h[i]. Returns a vector of vectors containing the dimensional data. 
