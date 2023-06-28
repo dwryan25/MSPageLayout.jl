@@ -6,17 +6,15 @@ using CitableText
 using CitableImage
 using CitableBase
 using JuMP
+using Gadfly
 using Ipopt
 using DataFrames
-
+using MSPageLayout
 using Documenter
 using DocStringExtensions
 
-include("TextDataHelper.jl")
-include("ZoneHelper.jl")
 
-
-model = Model(HiGHS.Optimizer)
+model = Model(optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0))
 
 va = hmt_codices()[6]
 dse = hmt_dse()[1]
@@ -26,12 +24,12 @@ pairlist = MSPageLayout.findPairs(pg, dse = dse)
 zones = MSPageLayout.getZones(pg)
 centroidlist = MSPageLayout.getAllCentroidPairs(pairlist,dse)
 n = length(centroidlist)
-pairsdimensions = pairsDimensions(pairlist, dse)
-m = length(pairsdimensions)
+pdimensions = MSPageLayout.pairsDimensions(pairlist, dse)
+m = length(pdimensions[1])
 #Zone data pre-processing
-topzone = zone[1]
-extzone = zone[2]
-bottomzone = zone[3]
+topzone = zones[1]
+extzone = zones[2]
+bottomzone = zones[3]
 
 tx = topzone[1]
 ty = topzone[2]
@@ -52,37 +50,38 @@ bh = bottomzone[4]
 #4th scholia on the page
 #<--------------------------------------
 #iliad text dimensions
-x = pairsdimensions[1][1:m]
-y = pairsdimensions[2][1:m]
-w = pairsdimensions[3][1:m]
-h = pairsdimensions[4][1:m]
+x = pdimensions[1]
+y = pdimensions[2]
+w = pdimensions[3]
+h = pdimensions[4]
 #scholia text dimensions
-sx = pairsdimensions[5][1:m]
-sy = pairsdimensions[6][1:m]
-sw = pairsdimensions[7][1:m]
-sh = pairsdimensions[8][1:m]
+sx = pdimensions[5]
+sy = pdimensions[6]
+sw = pdimensions[7]
+sh = pdimensions[8]
 #centroids
-x1 = centroidlist[1:n][1]
-x2 = centroidlist[1:n][3]
-y1 = centroidlist[1:n][2]
-y2 = centroidlist[1:n][4]
+cx1 = centroidlist[1:n][1]
+cx2 = centroidlist[1:n][2]
+cy1 = centroidlist[1:n][3]
+cy2 = centroidlist[1:n][4]
 #---------------------------------------->
-@variable(model, begin
+
+@variables(model, begin
     #centroid data
-    x1 >= 0 #iliad text box x centroid
-    x2 >= 0 #scholia text box x centroid
-    y1 >= 0 #iliad text box y centroid
-    y2 >= 0 #scholia text box y centroid
+    cx1 >= 0 #iliad text box x centroid
+    cx2 >= 0 #scholia text box x centroid
+    cy1 >= 0 #iliad text box y centroid
+    cy2 >= 0 #scholia text box y centroid
     #dimensional data for iliad text
-    x >= 0
-    y >= 0
-    w >= 0
-    h >= 0
+    x[1:m] >= 0
+    y[1:m] >= 0
+    w[1:m] >= 0
+    h[1:m] >= 0
     #dimensional data for scholia text
-    sx >= 0
-    sy >= 0
-    sw >= 0
-    sh >= 0
+    sx[1:m] >= 0
+    sy[1:m] >= 0
+    sw[1:m] >= 0
+    sh[1:m] >= 0
     #zone data
     tx >= 0
     ty >= 0
@@ -97,21 +96,44 @@ y2 = centroidlist[1:n][4]
     bw >= 0
     bh >= 0
 end)
-i = [1:n]
-j = [1:m]
-@constraints(begin
+
+@constraints(model, begin
     #scholia must go in numbered order from top down
-    sy[i] + sh[i] <= sy[i+1]
-    #must fit within zones; here is defined where the scholia cannot go
-    sx >= tx #scholia must be within entire text box from lef
-    sx <= ex +ew #scholia must be within entire text box from right
-    sy >= ty #scholia must be within entire text box from top to bottom
-    sy <= th + eh + bh # scholia must be within entire text box from bottom to top
-    sy + sh <= ty + th #scholia must be outside of Iliad text box
-    sy + sh >= ty + th + eh #scholia must be outside of iliad text box
+
+        sy[1] + sh[1] <= sy[2]
+        sy[2] + sh[2] <= sy[3]
+        sy[3] + sh[3] <= sy[4]
+        sy[4] + sh[4] <= sy[5]
+        sy[4] + sh[5] <= sy[6]
+        sy[6] + sh[6] <= sy[7]
+        sy[7] + sh[7] <= sy[8]
+        sy[8] + sh[8] <= sy[9]
+        sy[9] + sh[9] <= sy[10]
+        sy[10] + sh[10] <= sy[11]
+        sy[11] + sh[11] <= sy[12]
+        sy[12] + sh[12] <= sy[13]
     
+    #must fit within zones; here is defined where the scholia cannot go
+    sx .>= tx #scholia must be within entire text box from left
+    sx .<= ex +ew #scholia must be within entire text box from right
+    sy .>= ty #scholia must be within entire text box from top to bottom
+    sy .<= th + eh + bh # scholia must be within entire text box from bottom to top
+    sy + sh .<= ty + th #scholia must be outside of Iliad text box
+    sy + sh .>= ty + th + eh #scholia must be outside of iliad text box
+    
+
 end)
 
-@objective(model, min, sqrt(abs(x2-x1)^2 + abs(y2-y1)^2))
+@NLobjective(model, Min, sqrt((cx2 - cx1)^2 + (cy2 - cy1)^2))
+
+
+optimize!(model)
+
+@show objective_value(model);
+
+D = DataFrame(sx = value.(sx), sy = value.(sy), sx2 = value.(sx) .+ value.(sw), sy2 = value.(sy) .+ value.(sh))
+plt = plot(D, Coord.cartesian(yflip=true), xmin = :sx, ymin = :sy, xmax = :sx2, ymax = :sy2, Geom.rect)
+
+draw(SVG(6inch, 6inch), vstack(hstack(plt)))
 
 
