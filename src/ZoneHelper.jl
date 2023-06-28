@@ -2,7 +2,6 @@
 dse parameter supplied then retrieve it
 $(SIGNATURES)
 """
-
 function iliadImageData(pg::Cite2Urn, dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
