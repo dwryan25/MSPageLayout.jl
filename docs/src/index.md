@@ -26,7 +26,7 @@ A user can get the following data with this package.
 Packages required
 ```@example
 using MSPageLayout
-using HmtArchives
+using HmtArchive
 using HmtArchive.analysis
 using CitableObject
 using CitableText
@@ -38,7 +38,6 @@ Extract the dimensions of the iliad text
 
 ```@example
 va = hmt_codices()[6]
-dse = hmt_dse()[1]
 pg = va.pages[70].urn
 
 iliadzone = MSPageLayout.iliadImageData(pg)
@@ -47,12 +46,17 @@ iliadzone = MSPageLayout.iliadImageData(pg)
 Get the zones of a manuscript page. See API documentation for this method for details on the return value
 
 ```@example
+va = hmt_codices()[6] #hide
+pg = va.pages[70].urn #hide
 zones = MSPageLayout.getZones(pg)
 ```
 Get the dimensions of each pair of scholia and text. pairsDimensions() streamlines the dimensional
 data for easy use in optimization problems. See API documentation for a table on how data is organized. 
 
 ```@example
+va = hmt_codices()[6] #hide
+dse = hmt_dse()[1] #hide
+pg = va.pages[70].urn #hide
 pairlist = MSPageLayout.findPairs(pg, dse = dse)
 pdimensions = pairsDimensions(pairlist, dse)
 ```
