@@ -66,6 +66,10 @@ cy1 = centroidlist[1:n][3]
 cy2 = centroidlist[1:n][4]
 #---------------------------------------->
 
+
+#print initial distance between centroids before optimization
+dist = centroidDistance(centroidlist[1])
+
 @variables(model, begin
     #centroid data
     cx1 >= 0 #iliad text box x centroid

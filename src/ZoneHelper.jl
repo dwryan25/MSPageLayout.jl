@@ -1,8 +1,9 @@
 """Gather Iliad image coordinates for a given page.If no 
-dse parameter supplied then retrieve it
+dse parameter supplied then retrieve it. Returns a vector containing
+the dimensions of the iliad text in x,y,w,h format. 
 $(SIGNATURES)
 """
-function iliadImageData(pg::Cite2Urn, dse = nothing)
+function iliadImageData(pg::Cite2Urn; dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
@@ -109,7 +110,10 @@ end
 
 
 """Get the proposed scholia zones of a recto or verso page. 
-Finds out whether a page is verso or recto and then calls helper functions
+Finds out whether a page is verso or recto and then calls helper functions. The return value
+is a vector of vectors. The first vector is the x,y,w,h dimensions of the top zone, the second
+for the exterior zone, and the the third for the bottom zone. 
+$(SIGNATURES)
 """
 function getZones(pg::Cite2Urn; dse = nothing)
     dserecords = if isnothing(dse)

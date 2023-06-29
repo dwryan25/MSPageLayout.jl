@@ -14,7 +14,7 @@ Pkg.instantiate()
 using Documenter, DocStringExtensions, MSPageLayout
 
 makedocs(
-    sitename = "CitableCorpus.jl",
+    sitename = "MSPageLayout.jl",
     pages = [
         "Overview" => "index.md",
   
