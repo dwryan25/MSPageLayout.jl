@@ -1,6 +1,5 @@
 
-""" Returns a vector of all the main scholia on a page and their
-matching lines. 
+""" Returns a vector of TSPairs. A TSPair has two subtypes: an iliad text urn and a scholia text urn 
 """
 function findPairs(pg::Cite2Urn; dse = dse)
     dse = if isnothing(dse)
@@ -10,13 +9,14 @@ function findPairs(pg::Cite2Urn; dse = dse)
     end
     idx = hmt_commentary()[1]
     text = textsforsurface(pg, dse)
-    pairs = Vector{Tuple{CtsUrn, CtsUrn}}[]
+    pairlist = TSPair[]
     scholias = filter(txt->startswith(workcomponent(txt), "tlg5026.msA.hmt"), text)
         for scholia in scholias
             matches = filter(pr->pr[1] == scholia, idx.commentary)
-            push!(pairs, matches)
+            curpair = TSPair(matches[1][1], matches[1][2])
+            push!(pairlist, curpair)
         end
-    return pairs
+    return pairlist
 end
 """Parses a scholia text urn's image data and calculates the centroid of the image
 """
@@ -46,9 +46,9 @@ end
 Returns data in the format [x1, x2, y1, y2]. x1 and y1 being the iliad text box, x2 and y2 
 being the scholia text box.
 """
-function getCentroidPair(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection)
-    texturn = pair[1][2]
-    scholiaurn = pair[1][1]
+function getCentroidPair(pair::TSPair, dse::DSECollection)
+    texturn = pair.iliadtext
+    scholiaurn = pair.scholiatext
 
     if occursin("-", texturn.urn)
         touse = split(texturn.urn, "-")[1]
@@ -81,7 +81,7 @@ end
 """Returns a vector of a vector of floats containing the centroids of each iliad text box
 and its corresponding scholia. 
 """
-function getAllCentroidPairs(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
+function getAllCentroidPairs(pairlist::Vector{TSPair}, dse::DSECollection)
     centroids = Vector{Float16}[]
     for pair in pairlist 
         push!(centroids, getCentroidPair(pair, dse))
@@ -93,9 +93,9 @@ end
 of a text box. the first element of the return value is iliad text data and the second is
 scholia data. 
 """
-function getPairDimensions(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection)
-    texturn = pair[1][2]
-    scholiaurn = pair[1][1]
+function getPairDimensions(pair::TSPair, dse::DSECollection)
+    texturn = pair.iliadtext
+    scholiaurn = pair.scholiatext
 
     if occursin("-", texturn.urn)
         touse = split(texturn.urn, "-")[1]
@@ -126,7 +126,7 @@ indices | value
 7         scholia text w vals
 8         scholia text h vals
 """
-function pairsDimensions(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
+function pairsDimensions(pairlist::Vector{TSPair}, dse::DSECollection)
     dimensions = Vector{Vector{Float16}}[]
     for pair in pairlist
         push!(dimensions, getPairDimensions(pair, dse))

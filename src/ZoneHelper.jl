@@ -2,7 +2,7 @@
 dse parameter supplied then retrieve it
 $(SIGNATURES)
 """
-function iliadImageData(pg::Cite2Urn, dse = nothing)
+function iliadImageData(pg::Cite2Urn; dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
@@ -43,13 +43,13 @@ end
 later be applied to all pages when the appropriate images are archived
 Page 70 image urn: urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.1533,0.09696,0.6511,0.7725
 """
-function scholiaZonesRecto(pg::Cite2Urn; dse= nothing)
+function scholiaZonesRecto(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
         dse
     end
-    iliadData = iliadImageData(pg)
+    PLACEHOLDER = pg.urn
     alltext = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.1533,0.09696,0.6511,0.7725")), ",")
     alltext = map(x->parse(Float16, x), alltext)
 
@@ -70,14 +70,14 @@ end
 and will apply to all pages when the appropriate images are archived.
 page 15verso surface urn: urn:cite2:hmt:vaimg.2017a:VA015VN_0517
 """
-function scholiaZonesVerso(pg::Cite2Urn; dse = nothing)
+function scholiaZonesVerso(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
         dse
     end
+    PLACEHOLDER = pg.urn
     # gather info on page
-    iliadData = iliadImageData(pg)
     alltext = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA015VN_0517@0.2132,0.1051,0.6361,0.6766")), ",")
     alltext = map(x->parse(Float16, x), alltext)
 
@@ -117,11 +117,14 @@ function getZones(pg::Cite2Urn; dse = nothing)
     else 
         dse
     end
+    iliadData = iliadImageData(pg, dse = dse)
     if endswith(pg.urn, "r")
-        scholiaZonesRecto(pg, dse = dserecords)
+        scholiazones = scholiaZonesRecto(pg, iliadData, dse = dserecords)
     elseif endswith(pg.urn, "v")
-        scholiaZonesVerso(pg, dse = dserecords)
+        scholiazones = scholiaZonesVerso(pg, iliadData, dse = dserecords)
     end
+    pagezones = PageSkeleton(scholiazones[1], scholiazones[2], scholiazones[3], iliadData)
+    return pagezones
 end
 
 

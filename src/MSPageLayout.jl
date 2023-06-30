@@ -12,8 +12,11 @@ using Documenter
 using DocStringExtensions
 
 export iliadImageData
-
+export PageSkeleton
+export TSPair
 include("ZoneHelper.jl")
 include("TextDataHelper.jl")
+include("PageSkeleton.jl")
+include("TSPair.jl")
 
 end # module MSPageLayout
