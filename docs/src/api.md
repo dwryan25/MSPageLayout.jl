@@ -3,7 +3,7 @@
 Functions:
 
 ```@docs
-iliadImageData
+MSPageLayout.iliadImageData
 MSPageLayout.getZones
 MSPageLayout.findPairs
 MSPageLayout.getAllCentroidPairs

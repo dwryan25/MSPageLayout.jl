@@ -13,14 +13,14 @@ function findPairs(pg::Cite2Urn; dse = dse)
     scholias = filter(txt->startswith(workcomponent(txt), "tlg5026.msA.hmt"), text)
         for scholia in scholias
             matches = filter(pr->pr[1] == scholia, idx.commentary)
-            curpair = TSPair(matches[1][1], matches[1][2])
+            curpair = TSPair(matches[1][2], matches[1][1])
             push!(pairlist, curpair)
         end
     return pairlist
 end
 """Parses a scholia text urn's image data and calculates the centroid of the image
 """
-function getSchCentroid(schUrn:: CtsUrn, dse::DSECollection)
+function getSchCentroid(schUrn::CtsUrn, dse::DSECollection)
     imgUrn = imagesfortext(schUrn, dse)
     imgData = split(subref(imgUrn[1]), ",")
     imgData = map(x->parse(Float16, x), imgData)
@@ -67,8 +67,8 @@ function centroidDistance(centroidPair::Vector{Vector{Float16}})
     y1 = centroidPair[1][2]
     y2 = centroidPair[2][2]
 
-    xd = abs(x2 - x1)
-    yd = abs(y2 - y1)
+    xd = x2 - x1
+    yd = y2 - y1
     xandy = xd^2 + yd^2
     dist = sqrt(xandy)
     return dist

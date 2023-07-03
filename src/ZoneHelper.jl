@@ -39,7 +39,7 @@ function iliadImageData(pg::Cite2Urn; dse = nothing)
     return finalcoords
 end
 
-"""Gets the proposed zones for page 70recto of the VenetusA. This is a test function that will
+"""Gets the proposed zones for page 34recto of the VenetusA. This is a test function that will
 later be applied to all pages when the appropriate images are archived
 Page 70 image urn: urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.1533,0.09696,0.6511,0.7725
 """
@@ -50,17 +50,12 @@ function scholiaZonesRecto(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothi
         dse
     end
     PLACEHOLDER = pg.urn
-    alltext = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.1533,0.09696,0.6511,0.7725")), ",")
-    alltext = map(x->parse(Float16, x), alltext)
+    wholepage = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.06982,0.06819,0.8152,0.8552")), ",")
+    wholepage = map(x->parse(Float16, x), alltext)
+    scholialist = filter(txt->startswith(workcomponent(txt), "tlg5026.msA.hmt"), textsforsurface(pg, dse))
 
-    # Calculates zone data
-    hprime = alltext[4]
-    h = iliadData[4]
-    htop = iliadData[2]-alltext[2]
-    hbottom = hprime - (h+htop)
-    topzonedata = [alltext[1], alltext[2], alltext[3], htop]
-    extzonedata = Float16[iliadData[1]+iliadData[3], iliadData[2], alltext[3]-iliadData[3], iliadData[4]]
-    bottomzonedata = Float16[alltext[1], iliadData[2]+iliadData[4], alltext[3], hbottom]
+    
+
 
     allzonedata = [topzonedata, extzonedata, bottomzonedata]
 
@@ -117,7 +112,7 @@ function getZones(pg::Cite2Urn; dse = nothing)
     else 
         dse
     end
-    iliadData = iliadImageData(pg, dse = dse)
+    iliadData = MSPageLayout.iliadImageData(pg, dse = dse)
     if endswith(pg.urn, "r")
         scholiazones = scholiaZonesRecto(pg, iliadData, dse = dserecords)
     elseif endswith(pg.urn, "v")
