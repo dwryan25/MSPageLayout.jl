@@ -1,3 +1,10 @@
+Condemned File. 
+Converted to plaintext because it may still have useful code. 
+
+
+
+
+
 using HmtArchive
 using HmtArchive.Analysis
 using CitablePhysicalText

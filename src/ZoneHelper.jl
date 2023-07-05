@@ -51,11 +51,16 @@ function scholiaZonesRecto(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothi
     end
     PLACEHOLDER = pg.urn
     wholepage = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.06982,0.06819,0.8152,0.8552")), ",")
-    wholepage = map(x->parse(Float16, x), alltext)
-    scholialist = filter(txt->startswith(workcomponent(txt), "tlg5026.msA.hmt"), textsforsurface(pg, dse))
+    wholepage = map(x->parse(Float16, x), wholepage)    
 
-    
-
+    # Calculates zone data
+    hprime = wholepage[4]
+    h = iliadData[4]
+    htop = iliadData[2]-wholepage[2]
+    hbottom = hprime - (h+htop)
+    topzonedata = [wholepage[1], wholepage[2], wholepage[3], htop]
+    extzonedata = Float16[iliadData[1]+iliadData[3], iliadData[2], wholepage[3]-iliadData[3]-(iliadData[1]-wholepage[1]), iliadData[4]]
+    bottomzonedata = Float16[wholepage[1], iliadData[2]+iliadData[4], wholepage[3], hbottom]
 
     allzonedata = [topzonedata, extzonedata, bottomzonedata]
 
@@ -73,8 +78,8 @@ function scholiaZonesVerso(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothi
     end
     PLACEHOLDER = pg.urn
     # gather info on page
-    alltext = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA015VN_0517@0.2132,0.1051,0.6361,0.6766")), ",")
-    alltext = map(x->parse(Float16, x), alltext)
+    wholepage = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.06982,0.06819,0.8152,0.8552")), ",")
+    wholepage = map(x->parse(Float16, x), wholepage)
 
     text = textsforsurface(hmt_codices()[6].pages[33].urn, dserecords)
     imscholia = filter(txt->startswith(workcomponent(txt), "tlg5026.msAim"), text)
@@ -91,11 +96,11 @@ function scholiaZonesVerso(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothi
     end
     # Calculate zone data
     immaxwidth = maximum(imwidths)
-    htop = iliadData[2] - alltext[2]
-    hbot = alltext[4] - (iliadData[4] + htop)
-    topzone = [alltext[1], alltext[2], alltext[3], htop]
-    extzone = [alltext[1], iliadData[2], alltext[3] - (iliadData[3] + immaxwidth), iliadData[4]]
-    bottomzone = [alltext[1], iliadData[2]+iliadData[4], alltext[3], hbot]
+    htop = iliadData[2] - wholepage[2]
+    hbot = wholepage[4] - (iliadData[4] + htop)
+    topzone = [wholepage[1], wholepage[2], wholepage[3], htop]
+    extzone = [wholepage[1], iliadData[2], wholepage[3] - (iliadData[3] + immaxwidth), iliadData[4]]
+    bottomzone = [wholepage[1], iliadData[2]+iliadData[4], wholepage[3], hbot]
     # order goes top, exterior, bottom
     allzonedata = [topzone, extzone, bottomzone]
     return allzonedata
@@ -118,8 +123,27 @@ function getZones(pg::Cite2Urn; dse = nothing)
     elseif endswith(pg.urn, "v")
         scholiazones = scholiaZonesVerso(pg, iliadData, dse = dserecords)
     end
-    pagezones = PageSkeleton(scholiazones[1], scholiazones[2], scholiazones[3], iliadData)
+
+    pagezones = [scholiazones[1], scholiazones[2], scholiazones[3], iliadData]
     return pagezones
 end
 
-
+"""This function returns the correction needed to scale all the data on a page to a 0.0 1.0 within 
+the text box that encloses the page. Essentially, it gets the values needed to discard the parts of
+the photo that do not contain the actual manuscript. It takes a page urn as its parameter and returns 
+a vector containing the x value correction and y value correction in the format [x,y].
+Extremely useful in relating zone and text data as this correction must be applied to all the data on
+a page before calling optimization or scoring functions. 
+$(SIGNATURES)
+"""
+function getCorrection(pg)
+    #Get the page box of the image
+    wholepage = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.06982,0.06819,0.8152,0.8552")), ",")
+    wholepage = map(x->parse(Float16, x), wholepage)
+    #Get the correction 
+    xcor = wholepage[1]
+    ycor = wholepage[2]
+    wcor = 1-wholepage[3]
+    hcor= 1 - wholepage[4]
+    return [xcor, ycor, wcor, hcor]
+end
