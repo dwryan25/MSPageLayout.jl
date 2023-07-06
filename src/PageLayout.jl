@@ -5,6 +5,6 @@
 """
 struct PageLayout
     zones::PageSkeleton
-    cenroidlist::Vector{Vector{Float16}}
+    centroidlist::Vector{Vector{Float16}}
     pairsdimensions::Vector{Vector{Float16}}
 end

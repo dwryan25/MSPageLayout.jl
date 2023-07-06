@@ -13,5 +13,4 @@ struct PageSkeleton
     extzone::Vector{Float16}
     bottomzone::Vector{Float16}
     iliadtextzone::Vector{Float16}
-    correction::Vector{Float16}
 end

@@ -37,11 +37,11 @@ function adjustCoords(pg::Cite2Urn, dse::DSECollection)
         centroidlist[i][3] = map(y->y-correction[1], centroidlist[i][3])
         centroidlist[i][4] = map(y->y-correction[2], centroidlist[i][4])
     end
-    layout = PageLayout(zones, centroidlist, pdimensions, correction)
+    layout = PageLayout(zones, centroidlist, pdimensions)
     return layout
 end
 
-function getPageLayout(pgnum, manuscript, dse)
+function getPageLayout(pgnum::Int16, manuscript::Codex, dse::DSECollection)
     pg = manuscript.pages[pgnum].urn
     layout = adjustCoords(pg, dse)
     return layout

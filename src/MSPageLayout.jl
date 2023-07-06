@@ -10,6 +10,7 @@ using CitableBase
 
 using Documenter
 using DocStringExtensions
+using Revise
 
 export PageSkeleton
 export TSPair
@@ -19,6 +20,7 @@ include("TSPair.jl")
 include("PageLayout.jl")
 include("ZoneHelper.jl")
 include("TextDataHelper.jl")
+include("FinalPageData.jl")
 
 
 end # module MSPageLayout

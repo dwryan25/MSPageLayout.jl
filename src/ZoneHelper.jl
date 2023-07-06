@@ -39,18 +39,21 @@ function iliadImageData(pg::Cite2Urn; dse = nothing)
     return finalcoords
 end
 
-"""Gets the proposed zones for page 34recto of the VenetusA. This is a test function that will
-later be applied to all pages when the appropriate images are archived
-Page 70 image urn: urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.1533,0.09696,0.6511,0.7725
+"""Gets the proposed zones for a recto page of the Venetus A manuscript. Helper function
+for getZones(). Returns a vector of vectors containing data on each zone. 
 """
-function scholiaZonesRecto(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothing)
+function scholiaZonesRecto(pg::Cite2Urn, iliadData::Vector{Float16}, rois::PageImageZone; dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
         dse
     end
-    PLACEHOLDER = pg.urn
-    wholepage = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.06982,0.06819,0.8152,0.8552")), ",")
+    local wholepage
+    for i in eachindex(rois.index)
+        if rois.index[i][1] == pg
+            wholepage = split(subref(rois.index[i][2]), ",")
+        end
+    end
     wholepage = map(x->parse(Float16, x), wholepage)    
 
     # Calculates zone data
@@ -66,20 +69,24 @@ function scholiaZonesRecto(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothi
 
     return allzonedata
 end
-"""Gets the proposed zones for page 15verso of the VenetusA. This is for testing purposes
-and will apply to all pages when the appropriate images are archived.
-page 15verso surface urn: urn:cite2:hmt:vaimg.2017a:VA015VN_0517
+"""Gets the proposed zones for a verso page of the Venetus A manuscript. This function
+returns a vector of vectors containing the data on each zone. It is a helper function for
+getZones()
 """
-function scholiaZonesVerso(pg::Cite2Urn, iliadData::Vector{Float16}; dse = nothing)
+function scholiaZonesVerso(pg::Cite2Urn, iliadData::Vector{Float16}, rois::PageImageZone; dse = nothing)
     dserecords = if isnothing(dse)
         hmt_dse()[1]
     else 
         dse
     end
-    PLACEHOLDER = pg.urn
-    # gather info on page
-    wholepage = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.06982,0.06819,0.8152,0.8552")), ",")
-    wholepage = map(x->parse(Float16, x), wholepage)
+    
+    local wholepage
+    for i in eachindex(rois.index)
+        if rois.index[i][1] == pg
+            wholepage = split(subref(rois.index[i][2]), ",")
+        end
+    end
+    wholepage = map(x->parse(Float16, x), wholepage)    
 
     text = textsforsurface(hmt_codices()[6].pages[33].urn, dserecords)
     imscholia = filter(txt->startswith(workcomponent(txt), "tlg5026.msAim"), text)
@@ -117,11 +124,12 @@ function getZones(pg::Cite2Urn; dse = nothing)
     else 
         dse
     end
+    rois = hmt_pagerois()
     iliadData = MSPageLayout.iliadImageData(pg, dse = dse)
     if endswith(pg.urn, "r")
-        scholiazones = scholiaZonesRecto(pg, iliadData, dse = dserecords)
+        scholiazones = scholiaZonesRecto(pg, iliadData, rois, dse = dserecords)
     elseif endswith(pg.urn, "v")
-        scholiazones = scholiaZonesVerso(pg, iliadData, dse = dserecords)
+        scholiazones = scholiaZonesVerso(pg, iliadData, rois, dse = dserecords)
     end
 
     pagezones = [scholiazones[1], scholiazones[2], scholiazones[3], iliadData]
