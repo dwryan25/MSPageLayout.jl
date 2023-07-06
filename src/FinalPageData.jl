@@ -1,18 +1,21 @@
+"""Adjusts the coordinates of page from the codex browser to scale to the region of interest. 
+    returns a PageLayout object with all the necessary data to begin optimization
+"""
 function adjustCoords(pg::Cite2Urn, dse::DSECollection)
     pairlist = MSPageLayout.findPairs(pg, dse = dse)
-    zones = MSPageLayout.getZones(pg)
-    centroidlist = MSPageLayout.getAllCentroidPairs(pairlist,dse)
+    zones = MSPageLayout.getZones(pg, dse = dse)
+    centroidlist = MSPageLayout.getAllCentroidPairs(pairlist, dse)
     pdimensions = MSPageLayout.pairsDimensions(pairlist, dse)
     correction = MSPageLayout.getCorrection(pg)
 
     #map correction to zones
     #x and y vals minus correction
-    for i = 1:2
+    for i = 1:4
        zones[i][1] = map(x->x-correction[1], zones[i][1])
        zones[i][2] = map(y->y-correction[2], zones[i][2])
     end
     #w and h vals plus correction
-    for i = 3:4
+    for i = 1:4
         zones[i][3] = map(w->w+correction[3], zones[i][3])
         zones[i][4] = map(h->h+correction[4], zones[i][4])
     end
@@ -40,8 +43,11 @@ function adjustCoords(pg::Cite2Urn, dse::DSECollection)
     layout = PageLayout(zones, centroidlist, pdimensions)
     return layout
 end
-
-function getPageLayout(pgnum::Int16, manuscript::Codex, dse::DSECollection)
+"""Function to get the page layout of a given page and manuscript. 
+    Returns a PageLayout object. 
+    $(SIGNATURES)
+"""
+function getPageLayout(pgnum::Int64, manuscript::Codex, dse::DSECollection)
     pg = manuscript.pages[pgnum].urn
     layout = adjustCoords(pg, dse)
     return layout

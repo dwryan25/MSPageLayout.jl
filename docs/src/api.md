@@ -8,6 +8,8 @@ MSPageLayout.getZones
 MSPageLayout.findPairs
 MSPageLayout.getAllCentroidPairs
 MSPageLayout.pairsDimensions
+MSPageLayout.getPageLayout
+MSPageLayout.pageOptimizerOne
 ```
 
 # Functions Deep Dive

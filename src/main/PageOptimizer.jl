@@ -1,4 +1,0 @@
-function pageOptimizerOne(pg)
-    
-
-end

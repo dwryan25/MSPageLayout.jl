@@ -116,15 +116,15 @@ end
 4 vectors for scholia text such that the dimensions of the ith box are specified by x[i],
 y[i], w[i], h[i]. Returns a vector of vectors containing the dimensional data. 
 Reference table for parsing data from return value of type Vector{Vector{Float16}}:
-indices | value
-1         iliad text x vals
-2         iliad text y vals
-3         iliad text w vals
-4         iliad text h vals
-5         scholia text x vals
-6         scholia text y vals
-7         scholia text w vals
-8         scholia text h vals
+|indices | value
+|1       |  iliad text x vals
+|2       |  iliad text y vals
+|3       |  iliad text w vals
+|4       |  iliad text h vals
+|5       |  scholia text x vals
+|6       |  scholia text y vals
+|7       |  scholia text w vals
+|8       |  scholia text h vals
 """
 function pairsDimensions(pairlist::Vector{TSPair}, dse::DSECollection)
     dimensions = Vector{Vector{Float16}}[]

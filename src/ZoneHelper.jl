@@ -144,9 +144,15 @@ Extremely useful in relating zone and text data as this correction must be appli
 a page before calling optimization or scoring functions. 
 $(SIGNATURES)
 """
-function getCorrection(pg)
+function getCorrection(pg::Cite2Urn)
     #Get the page box of the image
-    wholepage = split(subref(Cite2Urn("urn:cite2:hmt:vaimg.2017a:VA034RN_0035@0.06982,0.06819,0.8152,0.8552")), ",")
+    rois = hmt_pagerois()
+    local wholepage
+    for i in eachindex(rois.index)
+        if rois.index[i][1] == pg
+            wholepage = split(subref(rois.index[i][2]), ",")
+        end
+    end
     wholepage = map(x->parse(Float16, x), wholepage)
     #Get the correction 
     xcor = wholepage[1]

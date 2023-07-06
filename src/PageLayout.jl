@@ -2,6 +2,7 @@
     adjustCoords() creates a new variable of this type containing all the necessary data. 
     Top level functions which work with the data on a page will call
     getPageLayout() in order to get the necessary data and package it into one datatype
+    $(SIGNATURES)
 """
 struct PageLayout
     zones::PageSkeleton

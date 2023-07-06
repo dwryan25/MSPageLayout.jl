@@ -1,5 +1,8 @@
 module MSPageLayout
 
+using JuMP
+using HiGHS
+
 using HmtArchive
 using HmtArchive.Analysis
 using CitablePhysicalText
@@ -21,6 +24,7 @@ include("PageLayout.jl")
 include("ZoneHelper.jl")
 include("TextDataHelper.jl")
 include("FinalPageData.jl")
+include("PageOptimizer.jl")
 
 
 end # module MSPageLayout

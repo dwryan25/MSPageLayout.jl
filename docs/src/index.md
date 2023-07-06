@@ -64,7 +64,10 @@ data for easy use in optimization problems. See API documentation for a table on
 pairlist = MSPageLayout.findPairs(pg, dse = dse)
 pdimensions = MSPageLayout.pairsDimensions(pairlist, dse)
 ```
-
+To run an optimization algorithm on a page, you only need the function getPageLayout(). This will run all the above functions, adjust the data to scale to the page region of interest, and package it into a PageLayout object. Note that the page parameter takes an integer. Since the manuscript is a parameter the function internally retreives the page urn. 
+```@example tutorial
+pagedata = MSPageLayout.getPageLayout(70, va, dse)
+```
 
 
 

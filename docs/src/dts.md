@@ -9,4 +9,5 @@ DataTypes
 ```@docs
 PageSkeleton
 TSPair
+PageLayout
 ```
