@@ -16,8 +16,8 @@ function adjustCoords(pg::Cite2Urn, dse::DSECollection)
     end
     #w and h vals plus correction
     for i = 1:4
-        zones[i][3] = map(w->w+correction[3], zones[i][3])
-        zones[i][4] = map(h->h+correction[4], zones[i][4])
+        zones[i][3] = map(w->w*correction[3], zones[i][3])
+        zones[i][4] = map(h->h*correction[4], zones[i][4])
     end
     zones = PageSkeleton(zones[1], zones[2], zones[3], zones[4])
     #map correction to pairs dimensions 
@@ -25,13 +25,13 @@ function adjustCoords(pg::Cite2Urn, dse::DSECollection)
         pdimensions[i] = map(x->x-correction[i], pdimensions[i])
     end
     for i = 3:4
-        pdimensions[i] = map(x->x+correction[i-2], pdimensions[i])
+        pdimensions[i] = map(x->x*correction[i], pdimensions[i])
     end
     for i = 5:6
         pdimensions[i] = map(x->x-correction[i-4], pdimensions[i])
     end
     for i = 7:8
-        pdimensions[i] = map(x->x+correction[i-6], pdimensions[i])
+        pdimensions[i] = map(x->x*correction[i-4], pdimensions[i])
     end
     #map correction to centroids
     for i = 1:length(centroidlist)

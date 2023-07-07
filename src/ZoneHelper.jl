@@ -151,13 +151,14 @@ function getCorrection(pg::Cite2Urn)
     for i in eachindex(rois.index)
         if rois.index[i][1] == pg
             wholepage = split(subref(rois.index[i][2]), ",")
+            break
         end
     end
     wholepage = map(x->parse(Float16, x), wholepage)
     #Get the correction 
     xcor = wholepage[1]
     ycor = wholepage[2]
-    wcor = 1-wholepage[3]
-    hcor= 1 - wholepage[4]
+    wcor = 1/wholepage[3]
+    hcor= 1/wholepage[4]
     return [xcor, ycor, wcor, hcor]
 end

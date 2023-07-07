@@ -39,3 +39,10 @@ end
         score isa PageScore
       end
 end
+
+
+@testset "Test FinalPageData functions" begin
+    
+end
+
+@testset "Test Page Optimizer functions"
