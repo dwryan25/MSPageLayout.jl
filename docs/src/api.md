@@ -9,6 +9,12 @@ MSPageLayout.findPairs
 MSPageLayout.getAllCentroidPairs
 MSPageLayout.pairsDimensions
 MSPageLayout.getPageLayout
+MSPageLayout.getRoi
+MSPageLayout.getCorrection
+MSPageLayout.adjustZoneCoords!
+MSPageLayout.adjustPairCoords!
+MSPageLayout.adjustCentroidCoords!
+
 MSPageLayout.pageOptimizerOne
 ```
 

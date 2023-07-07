@@ -45,6 +45,7 @@ using CitableBase
 va = hmt_codices()[6] 
 dse = hmt_dse()[1]
 pg = va.pages[70].urn 
+rois = hmt_rois()
 ```
 Extract the dimensions of the iliad text
 

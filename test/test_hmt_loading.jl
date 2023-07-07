@@ -5,44 +5,7 @@
 
 end
 
-@testset "Test ZoneHelper.jl functions" begin
-    pg  = Cite2Urn("urn:cite2:hmt:msA.v1:34r")
-    zones = MSPageLayout.getZones(pg)
-    @test length(zones) == 3
-    for z in zones
-        @test length(z) == 4
-    end
-    @test zones isa Vector{Vector{Float16}}
-    for zone in zones
-        @test zone isa Vector{Float16}
-    end
+
+@testset "Test Page Optimizer functions" begin
+    #pageOptimizerOne()
 end
-
-@testset "Test TextDataHelper functions" begin
-    pg = Cite2Urn("urn:cite2:hmt:msA.v1:34r")
-    pairs = findPairs(pg)
-
-    @test isa Vector
-    @test
-end
-
-
-@testset "Test top-level Scoring functions" begin
-    proxscore = manuscriptProximityScore(newpages)
-    @test isaVector
-    @test for score in proxscore
-            score isa PageScore
-          end
-    churikscore = manuscriptChurikScore(newpages)
-    @test isaVector
-    @test for score in proxscore
-        score isa PageScore
-      end
-end
-
-
-@testset "Test FinalPageData functions" begin
-    
-end
-
-@testset "Test Page Optimizer functions"

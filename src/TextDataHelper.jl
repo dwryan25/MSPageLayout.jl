@@ -80,6 +80,7 @@ function getSchArea(xywh:: Vector{Float16})
 end 
 """Returns a vector of a vector of floats containing the centroids of each iliad text box
 and its corresponding scholia. 
+$(SIGNATURES)
 """
 function getAllCentroidPairs(pairlist::Vector{TSPair}, dse::DSECollection)
     centroids = Vector{Float16}[]
@@ -152,4 +153,36 @@ function pairsDimensions(pairlist::Vector{TSPair}, dse::DSECollection)
         push!(scholiahvals, dimensions[p][2][4])
     end
     return [textxvals, textyvals, textwvals, texthvals, scholiaxvals, scholiayvals, scholiawvals, scholiahvals]
+end
+"""This function adjusts the data of each scholia and text box to scale to 
+the page region of interest. It subtracts the correction from the x and y values and
+multiplies the w and h values by a proportion calculated in getCorrection() and passed as the second parameter
+$(SIGNATURES)
+"""
+function adjustPairCoords!(pdimensions::Vector{Vector{Float16}}, correction::Vector{Float16})
+    for i = 1:2
+        pdimensions[i] = map(x->x-correction[i], pdimensions[i])
+    end
+    for i = 3:4
+        pdimensions[i] = map(x->x*correction[i], pdimensions[i])
+    end
+    for i = 5:6
+        pdimensions[i] = map(x->x-correction[i-4], pdimensions[i])
+    end
+    for i = 7:8
+        pdimensions[i] = map(x->x*correction[i-4], pdimensions[i])
+    end
+end
+"""This function adjusts the centroids to scale to the page region of interest. 
+It subtracts each x and y value by the corresponding x or y correction, which is supplied
+in the second parameter. 
+$(SIGNATURES)
+"""
+function adjustCentroidCoords!(centroidlist::Vector{Vector{Float16}}, correction::Vector{Float16})
+    for i = 1:length(centroidlist)
+        centroidlist[i][1] = map(x->x-correction[1], centroidlist[i][1])
+        centroidlist[i][2] = map(x->x-correction[2], centroidlist[i][2])
+        centroidlist[i][3] = map(y->y-correction[1], centroidlist[i][3])
+        centroidlist[i][4] = map(y->y-correction[2], centroidlist[i][4])
+    end
 end
