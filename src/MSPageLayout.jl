@@ -16,6 +16,8 @@ using DocStringExtensions
 
 include("boxedtext.jl")
 include("pagedata.jl")
+include("layout_analysis.jl")
+include("score_results.jl")
 
 
 export PageData, pageData

@@ -6,13 +6,13 @@ struct PageData
     imagezone::Cite2Urn
 end
 
-
 """Construct a `PageData` object for the
 page identified by `pageurn`.  Optionally include
 a full HMT project dataset in the `data` parameter.
 Return `nothing` if no page region is available for an image.
+$(SIGNATURES)
 """
-function pageData(pageurn::Cite2Urn; data = nothing)#::Union{PageData, Nothing}
+function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
     hmtdata = isnothing(data) ? hmt_cex() : data
     dse = hmt_dse(hmtdata)[1] 
     textpassages = textsforsurface(pageurn, dse)
@@ -58,4 +58,20 @@ function pageData(pageurn::Cite2Urn; data = nothing)#::Union{PageData, Nothing}
         nothing
     end
 
+end
+
+"""Compute `y` values on page box of all scholia on page.
+$(SIGNATURES)
+"""
+function scholion_ys(pgdata::PageData)
+    scholionboxes = map(pr -> pr.scholionbox, pgdata.textpairs) .|> subref .|>  CitableImage.roiFloats
+    map(box -> box[2], scholionboxes)
+end
+
+"""Compute `y` values on page box of all *Iliad* lines commented
+on by scholia.
+$(SIGNATURES)
+"""
+function iliad_ys(pgdata::PageData)
+    []
 end
