@@ -3,4 +3,4 @@ using Test
 
 using CitableObject
 
-include("test_hmt_loading.jl")
+include("test_pagedata.jl")

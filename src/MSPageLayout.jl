@@ -13,8 +13,11 @@ using CitableBase
 
 using Documenter
 using DocStringExtensions
-using Revise
 
+include("pagedata.jl")
+
+export PageData, pageData
+#=
 export PageSkeleton
 export TSPair
 export PageLayout
@@ -25,6 +28,6 @@ include("ZoneHelper.jl")
 include("TextDataHelper.jl")
 include("FinalPageData.jl")
 include("PageOptimizer.jl")
-
+=#
 
 end # module MSPageLayout

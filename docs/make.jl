@@ -18,9 +18,8 @@ makedocs(
     pages = [
         "Overview" => "index.md",
   
-        "API documentation" => "api.md",
-        
-        "DataTypes" => "dts.md"
+        #"API documentation" => "api.md",
+        #"DataTypes" => "dts.md"
         ]
     )
 
