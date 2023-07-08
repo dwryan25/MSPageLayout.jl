@@ -14,9 +14,14 @@ using CitableBase
 using Documenter
 using DocStringExtensions
 
+include("boxedtext.jl")
 include("pagedata.jl")
 
+
 export PageData, pageData
+export BoxedTextPair
+
+
 #=
 export PageSkeleton
 export TSPair
