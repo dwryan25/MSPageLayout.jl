@@ -1,9 +1,8 @@
 
 """ Returns a vector of all the main scholia on a page and their
 matching lines. 
-$(SIGNATURES)
 """
-function findPairs(pg::Cite2Urn; dse = nothing)
+function findPairs(pg::Cite2Urn; dse = dse)
     dse = if isnothing(dse)
         hmt_dse()[1]
     else 
@@ -60,15 +59,13 @@ function getCentroidPair(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection
     #when calculating x1,x2,y1,y2: x1,y1 is always iliad text box and x2,y2 is scholia text box
     return [tCentroid[1], sCentroid[1], tCentroid[2], sCentroid[2]]
 end
-"""Gets the distance between centroids. Takes a centroid pair as a parameter and returns the
-distance between them. Use this to compare distance to the generated optimal distance. 
-$(SIGNATURES)
+"""Gets the distance between centroids
 """
-function centroidDistance(centroidPair::Vector{Float16})
-    x1 = centroidPair[1]
-    x2 = centroidPair[2]
-    y1 = centroidPair[3]
-    y2 = centroidPair[4]
+function centroidDistance(centroidPair::Vector{Vector{Float16}})
+    x1 = centroidPair[1][1]
+    x2 = centroidPair[2][1]
+    y1 = centroidPair[1][2]
+    y2 = centroidPair[2][2]
 
     xd = abs(x2 - x1)
     yd = abs(y2 - y1)
@@ -83,7 +80,6 @@ function getSchArea(xywh:: Vector{Float16})
 end 
 """Returns a vector of a vector of floats containing the centroids of each iliad text box
 and its corresponding scholia. 
-$(SIGNATURES)
 """
 function getAllCentroidPairs(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
     centroids = Vector{Float16}[]
@@ -120,18 +116,15 @@ end
 4 vectors for scholia text such that the dimensions of the ith box are specified by x[i],
 y[i], w[i], h[i]. Returns a vector of vectors containing the dimensional data. 
 Reference table for parsing data from return value of type Vector{Vector{Float16}}:
-
-| indices | value              |
-| --- | --- |
-|1    |      iliad text x vals| 
-|2    |     iliad text y vals|
-|3    |     iliad text w vals|
-|4    |     iliad text h vals|
-|5    |     scholia text x vals|
-|6    |     scholia text y vals|
-|7    |     scholia text w vals|
-|8    |     scholia text h vals|
-$(SIGNATURES)
+indices | value
+1         iliad text x vals
+2         iliad text y vals
+3         iliad text w vals
+4         iliad text h vals
+5         scholia text x vals
+6         scholia text y vals
+7         scholia text w vals
+8         scholia text h vals
 """
 function pairsDimensions(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
     dimensions = Vector{Vector{Float16}}[]
