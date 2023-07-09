@@ -23,9 +23,13 @@ include("score_results.jl")
 
 
 export PageData, pageData
+# functions page PageData:
+export scholion_y_tops, scholion_y_centers, scholion_heights
+export pageoffset_top, pageoffset_left
+
 
 export BoxedTextPair
-
+# functions on BoxedTextPairs:
 export scholion_x_left, scholion_x_right, scholion_x_center
 export scholion_y_top, scholion_y_bottom, scholion_y_center
 
