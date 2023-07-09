@@ -7,6 +7,14 @@ Returns a Vector of `y` coordinates.
 $(SIGNATURES)
 """
 function model_traditional_layout(pgdata::PageData; siglum = "msA")
+    texts = BoxedTextPair[]
+    if isnothing(siglum) 
+        texts = pgdata.textpairs
+    else
+        texts = filter(pr -> workdi(pr.scholion) == siglum, pgdata.textpairs)
+    end
+
+    #... apply model to `texts`
     []
 end
 
@@ -18,5 +26,13 @@ Optionally specific siglum of scholia to model. If `siglum` is `nothing`, includ
 $(SIGNATURES)
 """
 function model_churik_layout(pgdata::PageData; siglum = "msA")
+    texts = BoxedTextPair[]
+    if isnothing(siglum) 
+        texts = pgdata.textpairs
+    else
+        texts = filter(pr -> workdi(pr.scholion) == siglum, pgdata.textpairs)
+    end
+
+    #... apply model to `texts`
     []
 end
