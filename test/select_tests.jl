@@ -3,7 +3,7 @@ Pkg.activate("..")
 
 using MSPageLayout
 
-using CitableObject
+using CitableObject, CitableText
 
 
 using Test

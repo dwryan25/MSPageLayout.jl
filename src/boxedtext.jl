@@ -8,6 +8,15 @@ struct BoxedTextPair
     iliadbox::Cite2Urn
 end
 
+"""Compute height of scholion text box.
+$(SIGNATURES)
+"""
+function scholion_height(textpair::BoxedTextPair; digits = 3)
+    b = scholion_y_bottom(textpair, digits = digits)
+    t = scholion_y_top(textpair, digits = digits)
+    b - t
+end
+
 
 """Compute left edge of `scholionbox`.
 $(SIGNATURES)
@@ -54,7 +63,57 @@ end
 $(SIGNATURES)
 """
 function scholion_y_center(textpair::BoxedTextPair; digits = 3)
-    b = scholion_x_bottom(textpair, digits = digits)
-    t = scholion_x_top(textpair, digits = digits)
-    (t - b) / 2
+    b = scholion_y_bottom(textpair, digits = digits)
+    t = scholion_y_top(textpair, digits = digits)
+    round((t + b) / 2, digits = digits)
+end
+
+"""Compute left edge of `iliadbox`.
+$(SIGNATURES)
+"""
+function iliad_x_left(textpair::BoxedTextPair; digits = 3)
+    imagefloats(textpair.iliadbox, digits = digits)[1]
+end
+
+"""Compute right edge of `iliadbox` within page zone.
+$(SIGNATURES)
+"""
+function iliad_x_right(textpair::BoxedTextPair; digits = 3)
+    floats = imagefloats(textpair.iliadbox, digits = digits)
+    floats[1] + floats[3]
+end
+
+
+"""Compute center in x  of `iliadbox` within page zone.
+$(SIGNATURES)
+"""
+function iliad_x_center(textpair::BoxedTextPair; digits = 3)
+    r = iliad_x_right(textpair, digits = digits)
+    l = iliad_x_left(textpair, digits = digits)
+    (r - l) / 2
+end
+
+"""Compute top edge of `iliadbox`.
+$(SIGNATURES)
+"""
+function iliad_y_top(textpair::BoxedTextPair; digits = 3)
+    imagefloats(textpair.iliadbox, digits = digits)[2]
+end
+
+"""Compute bottom edge of `iliadbox` within page zone.
+$(SIGNATURES)
+"""
+function iliad_y_bottom(textpair::BoxedTextPair; digits = 3)
+    floats = imagefloats(textpair.iliadbox, digits = digits)
+    floats[2] + floats[4]
+end
+
+
+"""Compute center in y  of `iliadbox` within page zone.
+$(SIGNATURES)
+"""
+function iliad_y_center(textpair::BoxedTextPair; digits = 3)
+    b = iliad_y_bottom(textpair, digits = digits)
+    t = iliad_y_top(textpair, digits = digits)
+    round((t + b) / 2, digits = digits)
 end
