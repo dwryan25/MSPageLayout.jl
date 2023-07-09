@@ -15,7 +15,6 @@ macro bind(def, element)
 end
 
 # ╔═╡ 36927b11-2363-4d84-89a3-77cb4a63939a
-# ╠═╡ show_logs = false
 begin
 	using Pkg
 	Pkg.add("Luxor")
@@ -29,8 +28,10 @@ begin
 	Pkg.add("CitableObject")
 	using CitableObject
 
-	Pkg.add(url = "https://github.com/dwryan25/MSPageLayout.jl#wip")
+	Pkg.add(url = "https://github.com/dwryan25/MSPageLayout.jl", rev="wip")
 	using MSPageLayout
+
+	Pkg.status()
 end
 
 # ╔═╡ 874b7016-1e70-11ee-06bd-6dffcdd850d4

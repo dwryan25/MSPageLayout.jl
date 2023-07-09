@@ -1,5 +1,6 @@
 
-""" Returns a vector of TSPairs. A TSPair has two subtypes: an iliad text urn and a scholia text urn 
+""" Returns a vector of all the main scholia on a page and their
+matching lines. 
 """
 function findPairs(pg::Cite2Urn; dse = dse)
     dse = if isnothing(dse)
@@ -9,18 +10,17 @@ function findPairs(pg::Cite2Urn; dse = dse)
     end
     idx = hmt_commentary()[1]
     text = textsforsurface(pg, dse)
-    pairlist = TSPair[]
+    pairs = Vector{Tuple{CtsUrn, CtsUrn}}[]
     scholias = filter(txt->startswith(workcomponent(txt), "tlg5026.msA.hmt"), text)
         for scholia in scholias
             matches = filter(pr->pr[1] == scholia, idx.commentary)
-            curpair = TSPair(matches[1][2], matches[1][1])
-            push!(pairlist, curpair)
+            push!(pairs, matches)
         end
-    return pairlist
+    return pairs
 end
 """Parses a scholia text urn's image data and calculates the centroid of the image
 """
-function getSchCentroid(schUrn::CtsUrn, dse::DSECollection)
+function getSchCentroid(schUrn:: CtsUrn, dse::DSECollection)
     imgUrn = imagesfortext(schUrn, dse)
     imgData = split(subref(imgUrn[1]), ",")
     imgData = map(x->parse(Float16, x), imgData)
@@ -46,9 +46,9 @@ end
 Returns data in the format [x1, x2, y1, y2]. x1 and y1 being the iliad text box, x2 and y2 
 being the scholia text box.
 """
-function getCentroidPair(pair::TSPair, dse::DSECollection)
-    texturn = pair.iliadtext
-    scholiaurn = pair.scholiatext
+function getCentroidPair(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection)
+    texturn = pair[1][2]
+    scholiaurn = pair[1][1]
 
     if occursin("-", texturn.urn)
         touse = split(texturn.urn, "-")[1]
@@ -67,8 +67,8 @@ function centroidDistance(centroidPair::Vector{Vector{Float16}})
     y1 = centroidPair[1][2]
     y2 = centroidPair[2][2]
 
-    xd = x2 - x1
-    yd = y2 - y1
+    xd = abs(x2 - x1)
+    yd = abs(y2 - y1)
     xandy = xd^2 + yd^2
     dist = sqrt(xandy)
     return dist
@@ -80,9 +80,8 @@ function getSchArea(xywh:: Vector{Float16})
 end 
 """Returns a vector of a vector of floats containing the centroids of each iliad text box
 and its corresponding scholia. 
-$(SIGNATURES)
 """
-function getAllCentroidPairs(pairlist::Vector{TSPair}, dse::DSECollection)
+function getAllCentroidPairs(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
     centroids = Vector{Float16}[]
     for pair in pairlist 
         push!(centroids, getCentroidPair(pair, dse))
@@ -94,9 +93,9 @@ end
 of a text box. the first element of the return value is iliad text data and the second is
 scholia data. 
 """
-function getPairDimensions(pair::TSPair, dse::DSECollection)
-    texturn = pair.iliadtext
-    scholiaurn = pair.scholiatext
+function getPairDimensions(pair::Vector{Tuple{CtsUrn, CtsUrn}}, dse::DSECollection)
+    texturn = pair[1][2]
+    scholiaurn = pair[1][1]
 
     if occursin("-", texturn.urn)
         touse = split(texturn.urn, "-")[1]
@@ -117,17 +116,17 @@ end
 4 vectors for scholia text such that the dimensions of the ith box are specified by x[i],
 y[i], w[i], h[i]. Returns a vector of vectors containing the dimensional data. 
 Reference table for parsing data from return value of type Vector{Vector{Float16}}:
-|indices | value
-|1       |  iliad text x vals
-|2       |  iliad text y vals
-|3       |  iliad text w vals
-|4       |  iliad text h vals
-|5       |  scholia text x vals
-|6       |  scholia text y vals
-|7       |  scholia text w vals
-|8       |  scholia text h vals
+indices | value
+1         iliad text x vals
+2         iliad text y vals
+3         iliad text w vals
+4         iliad text h vals
+5         scholia text x vals
+6         scholia text y vals
+7         scholia text w vals
+8         scholia text h vals
 """
-function pairsDimensions(pairlist::Vector{TSPair}, dse::DSECollection)
+function pairsDimensions(pairlist::Vector{Vector{Tuple{CtsUrn, CtsUrn}}}, dse::DSECollection)
     dimensions = Vector{Vector{Float16}}[]
     for pair in pairlist
         push!(dimensions, getPairDimensions(pair, dse))
@@ -153,36 +152,4 @@ function pairsDimensions(pairlist::Vector{TSPair}, dse::DSECollection)
         push!(scholiahvals, dimensions[p][2][4])
     end
     return [textxvals, textyvals, textwvals, texthvals, scholiaxvals, scholiayvals, scholiawvals, scholiahvals]
-end
-"""This function adjusts the data of each scholia and text box to scale to 
-the page region of interest. It subtracts the correction from the x and y values and
-multiplies the w and h values by a proportion calculated in getCorrection() and passed as the second parameter
-$(SIGNATURES)
-"""
-function adjustPairCoords!(pdimensions::Vector{Vector{Float16}}, correction::Vector{Float16})
-    for i = 1:2
-        pdimensions[i] = map(x->x-correction[i], pdimensions[i])
-    end
-    for i = 3:4
-        pdimensions[i] = map(x->x*correction[i], pdimensions[i])
-    end
-    for i = 5:6
-        pdimensions[i] = map(x->x-correction[i-4], pdimensions[i])
-    end
-    for i = 7:8
-        pdimensions[i] = map(x->x*correction[i-4], pdimensions[i])
-    end
-end
-"""This function adjusts the centroids to scale to the page region of interest. 
-It subtracts each x and y value by the corresponding x or y correction, which is supplied
-in the second parameter. 
-$(SIGNATURES)
-"""
-function adjustCentroidCoords!(centroidlist::Vector{Vector{Float16}}, correction::Vector{Float16})
-    for i = 1:length(centroidlist)
-        centroidlist[i][1] = map(x->x-correction[1], centroidlist[i][1])
-        centroidlist[i][2] = map(x->x-correction[2], centroidlist[i][2])
-        centroidlist[i][3] = map(y->y-correction[1], centroidlist[i][3])
-        centroidlist[i][4] = map(y->y-correction[2], centroidlist[i][4])
-    end
 end
