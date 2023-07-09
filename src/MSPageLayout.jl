@@ -14,6 +14,8 @@ using CitableBase
 using Documenter
 using DocStringExtensions
 
+
+include("utils.jl")
 include("boxedtext.jl")
 include("pagedata.jl")
 include("layout_analysis.jl")
@@ -21,7 +23,16 @@ include("score_results.jl")
 
 
 export PageData, pageData
+
 export BoxedTextPair
+
+export scholion_x_left, scholion_x_right, scholion_x_center
+export scholion_y_top, scholion_y_bottom, scholion_y_center
+
+export iliad_x_left, iliad_x_right, iliad_x_center
+export iliad_y_top, iliad_y_bottom, iliad_y_center
+
+export scholion_height
 
 
 #=

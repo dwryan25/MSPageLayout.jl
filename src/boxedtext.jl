@@ -7,3 +7,12 @@ struct BoxedTextPair
     iliadline::CtsUrn
     iliadbox::Cite2Urn
 end
+
+
+"""Compute left edge of `scholionbox` within page zone.
+$(SIGNATURES)
+"""
+function scholion_x_left(textpair::BoxedTextPair)
+    CitableImage.roiFloats(textpair.scholionbox)[1]
+    
+end
