@@ -47,33 +47,6 @@ md"""# Diagram page layout"""
 # ╔═╡ 0e71905f-081e-4615-bee8-247ee9cbfa2e
 md"""*Width of image (pixels)* $(@bind w confirm(Slider(200:50:800, show_value=true)))"""
 
-# ╔═╡ 8532acc6-67df-47c0-8184-899f4cebc4ed
-
-
-# ╔═╡ 97843cce-f632-4681-9867-a547e8494ef7
-"Diagram Iliad lines"
-function diagramiliad(coords, withscholia, height, width)
-	iliadpadding = 0.15 * w
-
-	roilist = map(pr -> pr[2], coords)
-	textlist = map(pr -> pr[1], coords)
-	
-	setdash("solid")
-	sethue("snow3")
-
-	for (i, v) in enumerate(roilist)
-		itop = v[2] * height
-		line(Point(iliadpadding, itop), Point(width - iliadpadding, itop), :stroke)
-		
-		ref = passagecomponent(textlist[i])
-		settext("<span font='7'>$(ref)</span>", Point(15, itop), markup = true, valign = "center")
-		if textlist[i] in withscholia
-			halfway = width / 2
-			circle(Point(halfway, itop), 3)
-		end
-	end
-end
-
 # ╔═╡ dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 html"""
 <br/><br/><br/><br/><br/><br/>
@@ -152,6 +125,12 @@ pg
 # ╠═╡ show_logs = false
 pgdata = pageData(pg)
 
+# ╔═╡ 73f0101c-12a1-4237-8fb2-1699bcb46383
+mainscholia = filter(pr -> startswith(workcomponent(pr.scholion), "tlg5026.msA."), pgdata.textpairs)
+
+# ╔═╡ 51937435-bb4e-4801-bfe0-740781475ad2
+isnothing(pgdata) || isempty(pgdata.textpairs) ? md"" : md"""*Display `n` scholia* $(@bind scholialimit Slider(1:length(mainscholia), show_value = true))"""
+
 # ╔═╡ 645ba380-a54f-4a79-ae0b-f24f59cc19b2
 "Difference in pixels of current display between top of image and top of page illustrated."
 topoffset = pageoffset_top(pgdata) * hpad
@@ -187,32 +166,76 @@ function commentedon(pairlist; siglum = "msA")
 	map(pr -> pr.iliadline, pairs) |> unique
 end
 
+# ╔═╡ 97843cce-f632-4681-9867-a547e8494ef7
+"Diagram Iliad lines"
+function diagramiliad(coords, withscholia, height, width)
+	iliadpadding = 0.15 * w
+
+	roilist = map(pr -> pr[2], coords)
+	textlist = map(pr -> pr[1], coords)
+	
+	setdash("solid")
+	sethue("snow3")
+
+	for (i, v) in enumerate(roilist)
+		itop = v[2] * height
+		line(Point(iliadpadding, itop), Point(width - iliadpadding, itop), :stroke)
+		
+		ref = passagecomponent(textlist[i])
+		settext("<span font='7'>$(ref)</span>", Point(15, itop), markup = true, valign = "center")
+		if textlist[i] in withscholia
+			halfway = width / 2
+			circle(Point(halfway, itop), 3)
+		end
+	end
+end
+
+# ╔═╡ 954cb248-950d-4b4c-b82e-efd68a78bbd5
+"""Plot in y the actual location of scholia on the page."""
+function plotActualScholia(scholia, left, ht; siglum = "msA")
+	sethue("olivedrab3")
+	actual_scholia_x = left + 20
+	for txtpair in scholia
+		top = scholion_y_top(txtpair) * ht
+		circle(Point(actual_scholia_x, top), 3, :fill)
+	end
+end
+
 # ╔═╡ 31caf334-aede-4171-83b7-d26c93c131e1
+if isnothing(pgdata) || isempty(pgdata.textpairs) 
+	md""
+else
 @draw begin
 	# Set coordinate system with origin at top left:
 	translate(-1 * w/2, -1 * h/2)
+	
 	# Draw frame around page boundaries
 	framepage(w,h)
 	strokepath()
 	# Mark off scholia zones
 	scholiaZones(h, scholia_left)
 	strokepath()
+	
 	# Draw iliad line locations
 	havescholia = commentedon(pgdata.textpairs)
 	diagramiliad(iliadcoords, havescholia, pageheight, scholia_left)
 
+	# Plot actual y locations of main scholia
+	plotActualScholia(mainscholia[1:scholialimit], scholia_left, h)
 	
 end wpad hpad
+end
 
 
 # ╔═╡ Cell order:
-# ╠═36927b11-2363-4d84-89a3-77cb4a63939a
+# ╟─36927b11-2363-4d84-89a3-77cb4a63939a
 # ╟─874b7016-1e70-11ee-06bd-6dffcdd850d4
 # ╟─a0ba2659-0b7b-482b-90f6-7baa83455722
 # ╟─882de14a-a64b-4a73-9bee-366ff5442577
 # ╟─0e71905f-081e-4615-bee8-247ee9cbfa2e
-# ╠═31caf334-aede-4171-83b7-d26c93c131e1
-# ╠═8532acc6-67df-47c0-8184-899f4cebc4ed
+# ╟─51937435-bb4e-4801-bfe0-740781475ad2
+# ╟─31caf334-aede-4171-83b7-d26c93c131e1
+# ╟─73f0101c-12a1-4237-8fb2-1699bcb46383
 # ╟─dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 # ╟─36973a8c-a31e-4d93-a61d-6906786ec079
 # ╟─30f78169-805d-4c38-89c4-115ca7e4f3e7
@@ -221,7 +244,7 @@ end wpad hpad
 # ╟─b405679c-ec6a-40e6-b8f5-44889233db9d
 # ╟─8ca6b28d-fb26-475b-9a1d-f8091c246037
 # ╠═df5ff74c-435c-43ad-9e70-d23418b28721
-# ╟─9e630977-1097-499f-bb7c-a79fb4e5cfb5
+# ╠═9e630977-1097-499f-bb7c-a79fb4e5cfb5
 # ╠═645ba380-a54f-4a79-ae0b-f24f59cc19b2
 # ╠═6a09fe3f-171c-48f3-bf77-210408819131
 # ╟─9bada34b-0748-474d-9a97-4dff4736540f
@@ -239,3 +262,4 @@ end wpad hpad
 # ╠═2a739866-9153-4b74-95d7-13a210170f22
 # ╟─a6beb710-6b66-4a9c-97dd-69131294cabd
 # ╟─97843cce-f632-4681-9867-a547e8494ef7
+# ╠═954cb248-950d-4b4c-b82e-efd68a78bbd5
