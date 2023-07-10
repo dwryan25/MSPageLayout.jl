@@ -47,6 +47,9 @@ md"""# Diagram page layout"""
 # ╔═╡ 0e71905f-081e-4615-bee8-247ee9cbfa2e
 md"""*Width of image (pixels)* $(@bind w confirm(Slider(200:50:800, show_value=true)))"""
 
+# ╔═╡ 9e630977-1097-499f-bb7c-a79fb4e5cfb5
+settext
+
 # ╔═╡ dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 html"""
 <br/><br/><br/><br/><br/><br/>
@@ -156,9 +159,12 @@ iliadpadding = 0.15 * w
 
 	setdash("solid")
 	sethue("snow3")
-	for v in iliadrois
+	for (i, v) in enumerate(iliadrois)
 		itop = v[2] * hpad - topoffset
 		line(Point(iliadpadding, itop), Point(scholia_left - iliadpadding, itop), :stroke)
+		ref = passagecomponent(iliadlines[i])
+		settext("<span font='7'>$(ref)</span>", Point(15, itop), markup = true, valign = "center")
+		
 	end
 	#sethue("azure3")
 	#line(Point(0, iliad_top), Point(scholia_left, iliad_top))
@@ -175,6 +181,7 @@ end wpad hpad
 # ╟─0e71905f-081e-4615-bee8-247ee9cbfa2e
 # ╠═31caf334-aede-4171-83b7-d26c93c131e1
 # ╠═063cafbb-5d63-4569-a45b-12e98a4b7649
+# ╠═9e630977-1097-499f-bb7c-a79fb4e5cfb5
 # ╟─dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 # ╟─36973a8c-a31e-4d93-a61d-6906786ec079
 # ╟─30f78169-805d-4c38-89c4-115ca7e4f3e7
