@@ -25,6 +25,7 @@ include("score_results.jl")
 export PageData, pageData
 # functions page PageData:
 export scholion_y_tops, scholion_y_centers, scholion_heights
+export iliad_y_tops
 export pageoffset_top, pageoffset_left
 
 
