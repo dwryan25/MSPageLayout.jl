@@ -65,6 +65,18 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
 
 end
 
+
+
+"""Compute top `y` value relative to page box for all *Iliad* lines on page.
+$(SIGNATURES)
+"""
+function iliad_y_tops(pgdata::PageData; digits = 3)
+    offset = pageoffset_top(pgdata, digits = digits)
+    raw = map(pr -> iliad_y_top(pr, digits = digits) - offset, pgdata.textpairs)
+    map(f -> round(f, digits = digits), raw)
+end
+
+
 """Compute top `y` value relative to page box for all scholia on page.
 $(SIGNATURES)
 """
@@ -75,6 +87,14 @@ function scholion_y_tops(pgdata::PageData; digits = 3)
 end
 
 
+"""Compute height of scholia on page.
+$(SIGNATURES)
+"""
+function scholion_heights(pgdata::PageData; digits = 3)
+    raw = map(pr -> scholion_height(pr, digits = digits), pgdata.textpairs)
+    map(ht -> round(ht, digits = digits), raw)
+end
+
 """Find top of page bound on documentary image.
 $(SIGNATURES)
 """
@@ -84,18 +104,7 @@ end
 
 
 
-##################### NEXT STEPS ####################
-#
-### Write API docstrings and unit tests, then implement these functions:
 
-function scholion_y_centers(pgdata::PageData; digits = 3)
-end
-
-function scholion_heights(pgdata::PageData; digits = 3)
-end
-
-function pageoffset_left(pgdata::PageData; digits = 3)
-end
 
 
 
