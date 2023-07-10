@@ -47,8 +47,32 @@ md"""# Diagram page layout"""
 # ╔═╡ 0e71905f-081e-4615-bee8-247ee9cbfa2e
 md"""*Width of image (pixels)* $(@bind w confirm(Slider(200:50:800, show_value=true)))"""
 
-# ╔═╡ 9e630977-1097-499f-bb7c-a79fb4e5cfb5
-settext
+# ╔═╡ 8532acc6-67df-47c0-8184-899f4cebc4ed
+
+
+# ╔═╡ 97843cce-f632-4681-9867-a547e8494ef7
+"Diagram Iliad lines"
+function diagramiliad(coords, withscholia, height, width)
+	iliadpadding = 0.15 * w
+
+	roilist = map(pr -> pr[2], coords)
+	textlist = map(pr -> pr[1], coords)
+	
+	setdash("solid")
+	sethue("snow3")
+
+	for (i, v) in enumerate(roilist)
+		itop = v[2] * height
+		line(Point(iliadpadding, itop), Point(width - iliadpadding, itop), :stroke)
+		
+		ref = passagecomponent(textlist[i])
+		settext("<span font='7'>$(ref)</span>", Point(15, itop), markup = true, valign = "center")
+		if textlist[i] in withscholia
+			halfway = width / 2
+			circle(Point(halfway, itop), 3)
+		end
+	end
+end
 
 # ╔═╡ dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 html"""
@@ -57,7 +81,7 @@ html"""
 """
 
 # ╔═╡ 36973a8c-a31e-4d93-a61d-6906786ec079
-md"> Framing the diagram"
+md"> **Framing the diagram**"
 
 # ╔═╡ 30f78169-805d-4c38-89c4-115ca7e4f3e7
 padding = 5
@@ -71,14 +95,32 @@ h = 1.5 * w
 # ╔═╡ b405679c-ec6a-40e6-b8f5-44889233db9d
 hpad = h + 2 * padding
 
-# ╔═╡ 00decc28-24bb-4c79-b3a0-e0e6f26574b0
-md"""> Zoning the page"""
+# ╔═╡ 8ca6b28d-fb26-475b-9a1d-f8091c246037
+"""Draw gray frame around page borders. Width and height
+of page should be given in current coordinate system of diagram.
+"""
+function framepage(wdth, ht)
+	sethue("gray30")
+	line(O, Point(wdth,0))
+	line(Point(wdth,0), Point(wdth, ht))
+	line(Point(wdth, ht), Point(0,ht))
+	line(Point(0,ht), O)
+end
 
 # ╔═╡ df5ff74c-435c-43ad-9e70-d23418b28721
 scholia_left = .7 * w
 
+# ╔═╡ 9e630977-1097-499f-bb7c-a79fb4e5cfb5
+"""Diagram layout zones for scholia."""
+function scholiaZones(ht, left_exterior)
+	
+	setdash("dot")
+	sethue("olivedrab3")
+	line(Point(left_exterior, 0), Point(left_exterior, ht))
+end
+
 # ╔═╡ 9bada34b-0748-474d-9a97-4dff4736540f
-md"> HMT data"
+md"> **HMT data**"
 
 # ╔═╡ d167eb70-f471-444b-a1a7-abcb5dcc8471
 data = hmt_cex()
@@ -103,6 +145,9 @@ md"""*Select a page and click* `Submit` $(@bind pg confirm(Select(menu)))"""
 # ╔═╡ 882de14a-a64b-4a73-9bee-366ff5442577
 md"""#### Analyzing manuscript page $(objectcomponent(pg))"""
 
+# ╔═╡ 748768ed-4eed-4132-9973-f2a400862611
+pg
+
 # ╔═╡ 063cafbb-5d63-4569-a45b-12e98a4b7649
 # ╠═╡ show_logs = false
 pgdata = pageData(pg)
@@ -111,11 +156,11 @@ pgdata = pageData(pg)
 "Difference in pixels of current display between top of image and top of page illustrated."
 topoffset = pageoffset_top(pgdata) * hpad
 
-# ╔═╡ 748768ed-4eed-4132-9973-f2a400862611
-pg
+# ╔═╡ 6a09fe3f-171c-48f3-bf77-210408819131
+pageheight = hpad - topoffset
 
 # ╔═╡ 0f42eb04-fc71-4bf9-9390-4b9022b82a4b
-md"> Data to diagram all *Iliad* lines"
+md"> **Data to diagram all *Iliad* lines**"
 
 # ╔═╡ acd34a2d-5af9-4a8e-a277-bb9b47d72631
 iliadlines = filter(textsforsurface(pg, dse)) do txt
@@ -130,10 +175,13 @@ end
 # ╔═╡ e5d696f5-1237-4c9e-ba3c-b732114d917b
 iliadrois = map(i -> MSPageLayout.imagefloats(i), iliadimages)
 
-# ╔═╡ 8532acc6-67df-47c0-8184-899f4cebc4ed
-iliadpadding = 0.15 * w
+# ╔═╡ 2a739866-9153-4b74-95d7-13a210170f22
+iliadcoords = zip(iliadlines, iliadrois) |> collect
 
 # ╔═╡ a6beb710-6b66-4a9c-97dd-69131294cabd
+"Compute unique list of *Iliad* lines with scholia commenting on them,
+optionally filtering to include only scholia in the group identified by `siglum`.
+"
 function commentedon(pairlist; siglum = "msA")
 	pairs = filter(pr -> startswith(workcomponent(pr.scholion),"tlg5026.$(siglum)."), pairlist)
 	map(pr -> pr.iliadline, pairs) |> unique
@@ -141,42 +189,21 @@ end
 
 # ╔═╡ 31caf334-aede-4171-83b7-d26c93c131e1
 @draw begin
+	# Set coordinate system with origin at top left:
 	translate(-1 * w/2, -1 * h/2)
-
-	
-	sethue("gray30")
-	line(O, Point(w,0))
-	line(Point(w,0), Point(w, h))
-	line(Point(w, h), Point(0,h))
-	line(Point(0,h), O)
+	# Draw frame around page boundaries
+	framepage(w,h)
 	strokepath()
-
-	setdash("dot")
-	sethue("olivedrab3")
-	line(Point(scholia_left, 0), Point(scholia_left, h))
+	# Mark off scholia zones
+	scholiaZones(h, scholia_left)
 	strokepath()
-
-
+	# Draw iliad line locations
 	havescholia = commentedon(pgdata.textpairs)
-	setdash("solid")
-	sethue("snow3")
-	for (i, v) in enumerate(iliadrois)
-		itop = v[2] * hpad - topoffset
-		
-		line(Point(iliadpadding, itop), Point(scholia_left - iliadpadding, itop), :stroke)
-		ref = passagecomponent(iliadlines[i])
-		settext("<span font='7'>$(ref)</span>", Point(15, itop), markup = true, valign = "center")
-		if iliadlines[i] in havescholia
-			halfway = scholia_left / 2
-			circle(Point(halfway, itop), 3)
-		end
-	end
+	diagramiliad(iliadcoords, havescholia, pageheight, scholia_left)
 
 	
 end wpad hpad
 
-# ╔═╡ e8d4361b-126f-47d8-ad06-ec99b9906d66
-commentedon(pgdata.textpairs)
 
 # ╔═╡ Cell order:
 # ╠═36927b11-2363-4d84-89a3-77cb4a63939a
@@ -185,17 +212,18 @@ commentedon(pgdata.textpairs)
 # ╟─882de14a-a64b-4a73-9bee-366ff5442577
 # ╟─0e71905f-081e-4615-bee8-247ee9cbfa2e
 # ╠═31caf334-aede-4171-83b7-d26c93c131e1
-# ╠═063cafbb-5d63-4569-a45b-12e98a4b7649
-# ╠═9e630977-1097-499f-bb7c-a79fb4e5cfb5
+# ╠═8532acc6-67df-47c0-8184-899f4cebc4ed
 # ╟─dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 # ╟─36973a8c-a31e-4d93-a61d-6906786ec079
 # ╟─30f78169-805d-4c38-89c4-115ca7e4f3e7
 # ╟─6302db98-daf9-480d-bdda-2e350245a1bc
 # ╟─65ace1d4-eb73-4924-875c-d24798f6b8cd
 # ╟─b405679c-ec6a-40e6-b8f5-44889233db9d
-# ╟─00decc28-24bb-4c79-b3a0-e0e6f26574b0
+# ╟─8ca6b28d-fb26-475b-9a1d-f8091c246037
 # ╠═df5ff74c-435c-43ad-9e70-d23418b28721
-# ╟─645ba380-a54f-4a79-ae0b-f24f59cc19b2
+# ╟─9e630977-1097-499f-bb7c-a79fb4e5cfb5
+# ╠═645ba380-a54f-4a79-ae0b-f24f59cc19b2
+# ╠═6a09fe3f-171c-48f3-bf77-210408819131
 # ╟─9bada34b-0748-474d-9a97-4dff4736540f
 # ╟─d167eb70-f471-444b-a1a7-abcb5dcc8471
 # ╠═2f4a3f9b-cf9d-4097-ad5d-20c3865eb392
@@ -203,10 +231,11 @@ commentedon(pgdata.textpairs)
 # ╠═ff7fa129-f715-4fb6-9701-6e4ea442c8c6
 # ╠═a98de624-0c28-4fa1-811d-edf0b1b76150
 # ╠═748768ed-4eed-4132-9973-f2a400862611
+# ╠═063cafbb-5d63-4569-a45b-12e98a4b7649
 # ╟─0f42eb04-fc71-4bf9-9390-4b9022b82a4b
 # ╟─acd34a2d-5af9-4a8e-a277-bb9b47d72631
 # ╟─53def3ad-3d59-4004-9820-eca3ef3e9d52
-# ╟─e5d696f5-1237-4c9e-ba3c-b732114d917b
-# ╠═8532acc6-67df-47c0-8184-899f4cebc4ed
-# ╠═a6beb710-6b66-4a9c-97dd-69131294cabd
-# ╠═e8d4361b-126f-47d8-ad06-ec99b9906d66
+# ╠═e5d696f5-1237-4c9e-ba3c-b732114d917b
+# ╠═2a739866-9153-4b74-95d7-13a210170f22
+# ╟─a6beb710-6b66-4a9c-97dd-69131294cabd
+# ╟─97843cce-f632-4681-9867-a547e8494ef7
