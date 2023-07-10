@@ -28,9 +28,30 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
     iliad_ys = iliad_y_tops(filteredPage, digits = digits)
     # 2. height of scholia:
     scholia_hts = scholion_heights(filteredPage, digits = digits)
-    # Use these two arrays to run optimization in JuMP!
+    # Use these two arrays to run optimization in JuMP
+    n = length(scholia_hts)
+    totals = []
+    for i in 1:n
+        push!(totals, sum(scholia_hts[1:i]))
+    end
+    #= 
+    Constraints: 
+    - the domain of possible y values is from 0 to 1 inclusive
+    - the y value of each note is < than the cumulative heights of the notes
+    Objective:
+    - minimize the distance from note to iliad line
+    =#
+    model = Model(HiGHS.Optimizer)
+    @variable(model, yval[i = 1:n])
+    @constraint(model, domainlimits, 0 .<= yval .<= 1)
+    @constraint(model, cumulativeconstraint, yval .>= totals)
+    
+    @objective(model, Min, sum(yval[i] - iliad_ys[i] for i in 1:n))
 
-    []
+    optimize!(model)
+    solution_summary(model)
+    opt_ys = join(round.(value.(yval), digits = digits), ",")
+    println(opt_ys)
     
     
 end

@@ -59,7 +59,7 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
         )
   
     else
-        @warn("Couldn't find page illustratoin in RoI index.")
+        @warn("Couldn't find page illustration in RoI index.")
         nothing
     end
 
