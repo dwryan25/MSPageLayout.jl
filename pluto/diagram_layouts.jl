@@ -41,6 +41,9 @@ begin
 	Pkg.status()
 end
 
+# ╔═╡ d2424f38-d821-44b6-8fd9-365ee695f324
+md"*The following hidden cell sets up the Julia environment.*"
+
 # ╔═╡ 874b7016-1e70-11ee-06bd-6dffcdd850d4
 md"""# Diagram page layout"""
 
@@ -126,14 +129,14 @@ pg
 pgdata = pageData(pg)
 
 # ╔═╡ 73f0101c-12a1-4237-8fb2-1699bcb46383
-mainscholia = filter(pr -> startswith(workcomponent(pr.scholion), "tlg5026.msA."), pgdata.textpairs)
+mainscholia = isnothing(pgdata) ? nothing : filter(pr -> startswith(workcomponent(pr.scholion), "tlg5026.msA."), pgdata.textpairs)
 
 # ╔═╡ 51937435-bb4e-4801-bfe0-740781475ad2
 isnothing(pgdata) || isempty(pgdata.textpairs) ? md"" : md"""*Display `n` scholia* $(@bind scholialimit Slider(1:length(mainscholia), show_value = true))"""
 
 # ╔═╡ 645ba380-a54f-4a79-ae0b-f24f59cc19b2
 "Difference in pixels of current display between top of image and top of page illustrated."
-topoffset = pageoffset_top(pgdata) * hpad
+topoffset = isnothing(pgdata) ? 0 : pageoffset_top(pgdata) * hpad
 
 # ╔═╡ 6a09fe3f-171c-48f3-bf77-210408819131
 pageheight = hpad - topoffset
@@ -201,6 +204,16 @@ function plotActualScholia(scholia, left, ht; siglum = "msA")
 	end
 end
 
+# ╔═╡ 8ded9235-9c80-4188-ac80-8a10f562663e
+"""Plot a list of scholia y values."""
+function plotHypothesisList(scholia, left, ht, colorname, insets = 1; siglum = "msA")
+	sethue("thistle")
+	actual_scholia_x = left + insets * 10
+	for s in scholia
+		circle(Point(actual_scholia_x, s), 3, :fill)
+	end
+end
+
 # ╔═╡ 31caf334-aede-4171-83b7-d26c93c131e1
 if isnothing(pgdata) || isempty(pgdata.textpairs) 
 	md""
@@ -222,12 +235,17 @@ else
 
 	# Plot actual y locations of main scholia
 	plotActualScholia(mainscholia[1:scholialimit], scholia_left, h)
+
+
+	tradl_yvalues = model_traditional_layout(pgdata)
+	plotHypothesisList(tradl_yvalues, scholia_left, h, "thistle", 2)
 	
 end wpad hpad
 end
 
 
 # ╔═╡ Cell order:
+# ╟─d2424f38-d821-44b6-8fd9-365ee695f324
 # ╟─36927b11-2363-4d84-89a3-77cb4a63939a
 # ╟─874b7016-1e70-11ee-06bd-6dffcdd850d4
 # ╟─a0ba2659-0b7b-482b-90f6-7baa83455722
@@ -244,8 +262,8 @@ end
 # ╟─b405679c-ec6a-40e6-b8f5-44889233db9d
 # ╟─8ca6b28d-fb26-475b-9a1d-f8091c246037
 # ╠═df5ff74c-435c-43ad-9e70-d23418b28721
-# ╠═9e630977-1097-499f-bb7c-a79fb4e5cfb5
-# ╠═645ba380-a54f-4a79-ae0b-f24f59cc19b2
+# ╟─9e630977-1097-499f-bb7c-a79fb4e5cfb5
+# ╟─645ba380-a54f-4a79-ae0b-f24f59cc19b2
 # ╠═6a09fe3f-171c-48f3-bf77-210408819131
 # ╟─9bada34b-0748-474d-9a97-4dff4736540f
 # ╟─d167eb70-f471-444b-a1a7-abcb5dcc8471
@@ -262,4 +280,5 @@ end
 # ╠═2a739866-9153-4b74-95d7-13a210170f22
 # ╟─a6beb710-6b66-4a9c-97dd-69131294cabd
 # ╟─97843cce-f632-4681-9867-a547e8494ef7
-# ╠═954cb248-950d-4b4c-b82e-efd68a78bbd5
+# ╟─954cb248-950d-4b4c-b82e-efd68a78bbd5
+# ╟─8ded9235-9c80-4188-ac80-8a10f562663e
