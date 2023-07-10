@@ -28,6 +28,10 @@ begin
 	using HmtArchive.Analysis
 	Pkg.add("CitableObject")
 	using CitableObject
+	Pkg.add("CitableText")
+	using CitableText
+	Pkg.add("CitablePhysicalText")
+	using CitablePhysicalText
 
 	Pkg.add(url = "https://github.com/dwryan25/MSPageLayout.jl")
 	using MSPageLayout
@@ -71,10 +75,65 @@ md"""> Zoning the page"""
 scholia_left = .7 * w
 
 # ╔═╡ 7503e0c3-6031-4488-88cc-0c11217101de
-iliad_top = .2 * h
+#iliad_top = .2 * h
 
 # ╔═╡ 015cd410-7dba-4ea1-a698-e467a400b4b2
-iliad_bottom = .8 * h
+#iliad_bottom = .8 * h
+
+# ╔═╡ 9bada34b-0748-474d-9a97-4dff4736540f
+md"> HMT data"
+
+# ╔═╡ d167eb70-f471-444b-a1a7-abcb5dcc8471
+data = hmt_cex()
+
+# ╔═╡ 2f4a3f9b-cf9d-4097-ad5d-20c3865eb392
+dse = hmt_dse(data)[1]
+
+# ╔═╡ c249767b-d6f0-4a2a-9fa9-2f8a818baadb
+mss = hmt_codices(data)
+
+# ╔═╡ ff7fa129-f715-4fb6-9701-6e4ea442c8c6
+va = mss[6]
+
+# ╔═╡ a98de624-0c28-4fa1-811d-edf0b1b76150
+menu = map(va.pages[25:end]) do pg
+	 pg.urn => objectcomponent(pg.urn)
+end
+
+# ╔═╡ a0ba2659-0b7b-482b-90f6-7baa83455722
+md"""*Select a page and click* `Submit` $(@bind pg confirm(Select(menu)))"""
+
+# ╔═╡ 882de14a-a64b-4a73-9bee-366ff5442577
+md"""#### Analyzing manuscript page $(objectcomponent(pg))"""
+
+# ╔═╡ 063cafbb-5d63-4569-a45b-12e98a4b7649
+# ╠═╡ show_logs = false
+pgdata = pageData(pg)
+
+# ╔═╡ 645ba380-a54f-4a79-ae0b-f24f59cc19b2
+topoffset = pageoffset_top(pgdata) * hpad
+
+# ╔═╡ 748768ed-4eed-4132-9973-f2a400862611
+pg
+
+# ╔═╡ 0f42eb04-fc71-4bf9-9390-4b9022b82a4b
+md"> Data to diagram all *Iliad* lines"
+
+# ╔═╡ acd34a2d-5af9-4a8e-a277-bb9b47d72631
+iliadlines = filter(textsforsurface(pg, dse)) do txt
+	startswith(workcomponent(txt), "tlg0012.tlg001")
+end
+
+# ╔═╡ 53def3ad-3d59-4004-9820-eca3ef3e9d52
+iliadimages = map(iliadlines) do txt
+	imagesfortext(txt, dse)[1]
+end
+
+# ╔═╡ e5d696f5-1237-4c9e-ba3c-b732114d917b
+iliadrois = map(i -> MSPageLayout.imagefloats(i), iliadimages)
+
+# ╔═╡ 8532acc6-67df-47c0-8184-899f4cebc4ed
+iliadpadding = 0.15 * w
 
 # ╔═╡ 31caf334-aede-4171-83b7-d26c93c131e1
 @draw begin
@@ -92,43 +151,30 @@ iliad_bottom = .8 * h
 	sethue("olivedrab3")
 	line(Point(scholia_left, 0), Point(scholia_left, h))
 	strokepath()
-	
-	sethue("azure3")
-	line(Point(0, iliad_top), Point(scholia_left, iliad_top))
-	line(Point(0, iliad_bottom), Point(scholia_left, iliad_bottom))
-	strokepath()
+
+
+
+	setdash("solid")
+	sethue("snow3")
+	for v in iliadrois
+		itop = v[2] * hpad - topoffset
+		line(Point(iliadpadding, itop), Point(scholia_left - iliadpadding, itop), :stroke)
+	end
+	#sethue("azure3")
+	#line(Point(0, iliad_top), Point(scholia_left, iliad_top))
+	#line(Point(0, iliad_bottom), Point(scholia_left, iliad_bottom))
+	#strokepath()
 	
 end wpad hpad
 
-# ╔═╡ 9bada34b-0748-474d-9a97-4dff4736540f
-md"> HMT data"
-
-# ╔═╡ d167eb70-f471-444b-a1a7-abcb5dcc8471
-data = hmt_cex()
-
-# ╔═╡ c249767b-d6f0-4a2a-9fa9-2f8a818baadb
-mss = hmt_codices(data)
-
-# ╔═╡ ff7fa129-f715-4fb6-9701-6e4ea442c8c6
-va = mss[6]
-
-# ╔═╡ a98de624-0c28-4fa1-811d-edf0b1b76150
-menu = map(va.pages[25:end]) do pg
-	 pg.urn => objectcomponent(pg.urn)
-end
-
-# ╔═╡ a0ba2659-0b7b-482b-90f6-7baa83455722
-md"""*Select a page and click* `Submit` $(@bind pg confirm(Select(menu)))"""
-
-# ╔═╡ 748768ed-4eed-4132-9973-f2a400862611
-pg
-
 # ╔═╡ Cell order:
-# ╟─36927b11-2363-4d84-89a3-77cb4a63939a
+# ╠═36927b11-2363-4d84-89a3-77cb4a63939a
 # ╟─874b7016-1e70-11ee-06bd-6dffcdd850d4
 # ╟─a0ba2659-0b7b-482b-90f6-7baa83455722
+# ╟─882de14a-a64b-4a73-9bee-366ff5442577
 # ╟─0e71905f-081e-4615-bee8-247ee9cbfa2e
-# ╟─31caf334-aede-4171-83b7-d26c93c131e1
+# ╠═31caf334-aede-4171-83b7-d26c93c131e1
+# ╠═063cafbb-5d63-4569-a45b-12e98a4b7649
 # ╟─dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 # ╟─36973a8c-a31e-4d93-a61d-6906786ec079
 # ╟─30f78169-805d-4c38-89c4-115ca7e4f3e7
@@ -139,9 +185,16 @@ pg
 # ╠═df5ff74c-435c-43ad-9e70-d23418b28721
 # ╠═7503e0c3-6031-4488-88cc-0c11217101de
 # ╠═015cd410-7dba-4ea1-a698-e467a400b4b2
+# ╠═645ba380-a54f-4a79-ae0b-f24f59cc19b2
 # ╟─9bada34b-0748-474d-9a97-4dff4736540f
 # ╟─d167eb70-f471-444b-a1a7-abcb5dcc8471
+# ╠═2f4a3f9b-cf9d-4097-ad5d-20c3865eb392
 # ╟─c249767b-d6f0-4a2a-9fa9-2f8a818baadb
 # ╠═ff7fa129-f715-4fb6-9701-6e4ea442c8c6
 # ╠═a98de624-0c28-4fa1-811d-edf0b1b76150
 # ╠═748768ed-4eed-4132-9973-f2a400862611
+# ╟─0f42eb04-fc71-4bf9-9390-4b9022b82a4b
+# ╟─acd34a2d-5af9-4a8e-a277-bb9b47d72631
+# ╟─53def3ad-3d59-4004-9820-eca3ef3e9d52
+# ╟─e5d696f5-1237-4c9e-ba3c-b732114d917b
+# ╠═8532acc6-67df-47c0-8184-899f4cebc4ed
