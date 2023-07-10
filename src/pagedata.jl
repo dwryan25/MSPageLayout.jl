@@ -25,7 +25,7 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
         iliadmatches = filter(pr -> pr[1] == s, allcommentary.commentary)
         if length(iliadmatches) == 1
             iliad = iliadmatches[1][2]
-            lineindex = findfirst(string(iliad), iliadstrings)
+            lineindex = findfirst(isequal(string(iliad)), iliadstrings)
 
             schimagematches = imagesfortext(s, dse)
             ilimagematches = imagesfortext(iliad, dse)
