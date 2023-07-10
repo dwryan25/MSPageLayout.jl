@@ -6,6 +6,7 @@ struct BoxedTextPair
     scholionbox::Cite2Urn
     iliadline::CtsUrn
     iliadbox::Cite2Urn
+    lineindex::Union{Int, Nothing}
 end
 
 """Compute height of scholion text box.
