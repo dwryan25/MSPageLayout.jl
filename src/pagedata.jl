@@ -19,10 +19,14 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
     allcommentary = hmt_commentary(hmtdata)[1]
   
     scholia = filter(psg -> startswith(workcomponent(psg), "tlg5026"), textpassages)
+    iliadlines = filter(psg -> startswith(workcomponent(psg), "tlg0012.tlg001"), textpassages)
+    iliadstrings = map(ln -> string(ln), iliadlines)
     boxedpairs = map(scholia) do s
         iliadmatches = filter(pr -> pr[1] == s, allcommentary.commentary)
         if length(iliadmatches) == 1
             iliad = iliadmatches[1][2]
+            lineindex = findfirst(string(iliad), iliadstrings)
+
             schimagematches = imagesfortext(s, dse)
             ilimagematches = imagesfortext(iliad, dse)
 
@@ -31,7 +35,8 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
                     s,
                     schimagematches[1],
                     iliad,
-                    ilimagematches[1]
+                    ilimagematches[1],
+                    lineindex
                 )
 
             else
