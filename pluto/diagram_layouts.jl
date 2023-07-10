@@ -77,12 +77,6 @@ md"""> Zoning the page"""
 # ╔═╡ df5ff74c-435c-43ad-9e70-d23418b28721
 scholia_left = .7 * w
 
-# ╔═╡ 7503e0c3-6031-4488-88cc-0c11217101de
-#iliad_top = .2 * h
-
-# ╔═╡ 015cd410-7dba-4ea1-a698-e467a400b4b2
-#iliad_bottom = .8 * h
-
 # ╔═╡ 9bada34b-0748-474d-9a97-4dff4736540f
 md"> HMT data"
 
@@ -114,6 +108,7 @@ md"""#### Analyzing manuscript page $(objectcomponent(pg))"""
 pgdata = pageData(pg)
 
 # ╔═╡ 645ba380-a54f-4a79-ae0b-f24f59cc19b2
+"Difference in pixels of current display between top of image and top of page illustrated."
 topoffset = pageoffset_top(pgdata) * hpad
 
 # ╔═╡ 748768ed-4eed-4132-9973-f2a400862611
@@ -138,6 +133,12 @@ iliadrois = map(i -> MSPageLayout.imagefloats(i), iliadimages)
 # ╔═╡ 8532acc6-67df-47c0-8184-899f4cebc4ed
 iliadpadding = 0.15 * w
 
+# ╔═╡ a6beb710-6b66-4a9c-97dd-69131294cabd
+function commentedon(pairlist; siglum = "msA")
+	pairs = filter(pr -> startswith(workcomponent(pr.scholion),"tlg5026.$(siglum)."), pairlist)
+	map(pr -> pr.iliadline, pairs) |> unique
+end
+
 # ╔═╡ 31caf334-aede-4171-83b7-d26c93c131e1
 @draw begin
 	translate(-1 * w/2, -1 * h/2)
@@ -156,22 +157,26 @@ iliadpadding = 0.15 * w
 	strokepath()
 
 
-
+	havescholia = commentedon(pgdata.textpairs)
 	setdash("solid")
 	sethue("snow3")
 	for (i, v) in enumerate(iliadrois)
 		itop = v[2] * hpad - topoffset
+		
 		line(Point(iliadpadding, itop), Point(scholia_left - iliadpadding, itop), :stroke)
 		ref = passagecomponent(iliadlines[i])
 		settext("<span font='7'>$(ref)</span>", Point(15, itop), markup = true, valign = "center")
-		
+		if iliadlines[i] in havescholia
+			halfway = scholia_left / 2
+			circle(Point(halfway, itop), 3)
+		end
 	end
-	#sethue("azure3")
-	#line(Point(0, iliad_top), Point(scholia_left, iliad_top))
-	#line(Point(0, iliad_bottom), Point(scholia_left, iliad_bottom))
-	#strokepath()
+
 	
 end wpad hpad
+
+# ╔═╡ e8d4361b-126f-47d8-ad06-ec99b9906d66
+commentedon(pgdata.textpairs)
 
 # ╔═╡ Cell order:
 # ╠═36927b11-2363-4d84-89a3-77cb4a63939a
@@ -190,9 +195,7 @@ end wpad hpad
 # ╟─b405679c-ec6a-40e6-b8f5-44889233db9d
 # ╟─00decc28-24bb-4c79-b3a0-e0e6f26574b0
 # ╠═df5ff74c-435c-43ad-9e70-d23418b28721
-# ╠═7503e0c3-6031-4488-88cc-0c11217101de
-# ╠═015cd410-7dba-4ea1-a698-e467a400b4b2
-# ╠═645ba380-a54f-4a79-ae0b-f24f59cc19b2
+# ╟─645ba380-a54f-4a79-ae0b-f24f59cc19b2
 # ╟─9bada34b-0748-474d-9a97-4dff4736540f
 # ╟─d167eb70-f471-444b-a1a7-abcb5dcc8471
 # ╠═2f4a3f9b-cf9d-4097-ad5d-20c3865eb392
@@ -205,3 +208,5 @@ end wpad hpad
 # ╟─53def3ad-3d59-4004-9820-eca3ef3e9d52
 # ╟─e5d696f5-1237-4c9e-ba3c-b732114d917b
 # ╠═8532acc6-67df-47c0-8184-899f4cebc4ed
+# ╠═a6beb710-6b66-4a9c-97dd-69131294cabd
+# ╠═e8d4361b-126f-47d8-ad06-ec99b9906d66
