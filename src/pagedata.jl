@@ -85,7 +85,15 @@ function scholion_y_tops(pgdata::PageData; digits = 3)
     raw = map(pr -> scholion_y_top(pr, digits = digits) - offset, pgdata.textpairs)
     map(f -> round(f, digits = digits), raw)
 end
-
+"""Compute top 'y' value relative to page box for main scholia on pageData
+$(SIGNATURES)
+"""
+function mainscholion_y_tops(pgdata::PageData; digits = 3)
+    texts = filter(pr -> workid(pr.scholion) == "msA", pgdata.textpairs)
+    offset = pageoffset_top(pgdata, digits = digits)
+    raw = map(pr -> scholion_y_top(pr, digits = digits) - offset, texts)
+    map(f ->round(f, digits = digits), raw)
+end
 
 """Compute height of scholia on page.
 $(SIGNATURES)

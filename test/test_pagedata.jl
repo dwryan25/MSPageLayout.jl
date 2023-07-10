@@ -12,6 +12,8 @@
 
     expected_tops = [0.256, 0.687, 0.724, 0.363, 0.510, 0.623, 0.307]
     @test scholion_y_tops(pgdata) == expected_tops
+    expected_maintops = [0.256]
+    @test_broken mainscholion_y_tops(pgdata) == expected_maintops
 end
 
 
