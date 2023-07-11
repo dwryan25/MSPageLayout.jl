@@ -62,6 +62,9 @@ md"""*Set image transparency* $(@bind alpha Slider(0:0.1:1.0, show_value=true, d
 # ╔═╡ c53c0426-fb20-4298-bd30-9151802fd7c0
 md"""*Padding* $(@bind pagepadding Slider(0:15, show_value=true))"""
 
+# ╔═╡ dbe46c81-29f6-4511-a7c8-808f3cf2c60d
+
+
 # ╔═╡ 8c25c52b-a892-4612-ac76-f2db398a8102
 html"""
 <br/><br/><br/><br/><br/>
@@ -136,6 +139,9 @@ md"""> **Diagramming**"""
 # ╔═╡ dfede8c9-88d9-49ab-9775-73940b897e90
 pageroiurn = filter(pr -> pr[1] == pg, rois)[1][2]
 
+# ╔═╡ 52d2e6d6-3093-4f3e-b475-664eaf321345
+pageroiurn
+
 # ╔═╡ 92bee788-0077-4964-b49a-5bf320ae0f3e
 md"> **Image service**"
 
@@ -156,7 +162,7 @@ function pageimage(pg, roituples; ht = 200)
 		nothing 
 	else
 		imgu = prs[1][2]
-		iifrequest = url(imgu, imgservice, ht = ht)
+		iifrequest = url(dropsubref(imgu), imgservice, ht = ht)
 		f = Downloads.download(iifrequest)
 		img = load(f)
 		rm(f)
@@ -169,6 +175,9 @@ img = begin
 	pgimg = pageimage(pg, rois, ht = chosenht)
 	isnothing(pgimg) ? nothing : RGBA.(pgimg, alpha)
 end
+
+# ╔═╡ d585578b-cea2-4319-a644-704a4fa4a274
+
 
 # ╔═╡ b02b2c35-ea16-4604-8505-6d853b9564ec
 (h,w) = isnothing(img) ? (nothing, nothing) : img |> size
@@ -210,7 +219,28 @@ if with_overlay
 end
 
 # ╔═╡ 9a150a1e-0d87-4c01-8111-88a4b4a53dd9
-box1 = iliadrois[1] * h 
+box1 = iliadrois[1]
+
+# ╔═╡ 4c3fc3a6-9c7f-4c8c-9538-4060851cb825
+iliadrois[1]
+
+# ╔═╡ 402fc274-21c9-4b1c-afdd-d5dd89c6fe2a
+	pagepcts = imagefloats(pageroiurn)
+
+# ╔═╡ 60ef94df-fdc3-4cfa-8523-c8a0fb67aba9
+pageroi = begin
+
+	[pagepcts[1] * w, pagepcts[2] * h, pagepcts[3] * w, pagepcts[4] * h]
+end
+
+# ╔═╡ e9de2598-3d08-4105-ba1b-497d4420d575
+(xoffset, yoffset) = (pageroi[1], pageroi[2])
+
+# ╔═╡ 8ee088d5-b468-4c91-ac11-c4e1d8da15a4
+srch = h + xoffset
+
+# ╔═╡ 34a742d3-6c62-4622-9af9-e56979736796
+srcw = w + yoffset
 
 # ╔═╡ b2609b83-75a7-4cf6-8a8b-9615d6618d1d
 if isnothing(img)
@@ -221,29 +251,22 @@ else
 	translate(-1 * wpad/2, -1 * hpad/2)
 	placeimage(img,O)
 
-	sethue("blue")
-	line(Point(box1[1], box1[2]), Point(box1[3], box1[2]), :stroke)
+
+	sethue("green")
+	for ir in iliadrois
+		x =  ir[1] * srcw 
+		y = ir[2] * srch 
+		line(Point(x,y), Point(x + 200, y), :stroke)
+	end
+	
+#	rect(iliadleft * srcw, iliadtop * srch, iliadw * srcw, iliadh * srch, :stroke)
+	
 	
 end  wpad hpad
 end
 
-# ╔═╡ 402fc274-21c9-4b1c-afdd-d5dd89c6fe2a
-	pagepcts = imagefloats(pageroiurn)
-
-# ╔═╡ 60ef94df-fdc3-4cfa-8523-c8a0fb67aba9
-pageroi = begin
-
-	[pagepcts[1] * w, pagepcts[2] * h, pagepcts[3] * 2, pagepcts[4] * h]
-end
-
-# ╔═╡ e9de2598-3d08-4105-ba1b-497d4420d575
-(xoffset, yoffset) = (pageroi[1], pageroi[2])
-
-# ╔═╡ 35026641-2593-4a28-ac96-305f1a57084e
-xy1 = [box1[1] - xoffset, box1[2] - yoffset]
-
 # ╔═╡ Cell order:
-# ╠═b8e7998b-7170-4f28-b2b7-e1392d20943e
+# ╟─b8e7998b-7170-4f28-b2b7-e1392d20943e
 # ╟─6a150e50-1f6d-11ee-0f75-9506d1fd1b64
 # ╟─5376fabb-a269-4f8e-94e0-ef51f4cd130b
 # ╟─1a94d396-9dd1-43e3-b369-f9efc29eb6b3
@@ -251,13 +274,18 @@ xy1 = [box1[1] - xoffset, box1[2] - yoffset]
 # ╟─55a71d9d-8190-49fd-8a47-4d7c6b5cf157
 # ╟─288f5cb6-11b7-43d0-80f0-1ca818a08e63
 # ╟─c1aa6499-9b37-4426-adea-bc97aa21e888
-# ╠═e9de2598-3d08-4105-ba1b-497d4420d575
 # ╟─e3b939a5-d829-4b87-8ec5-0ae631763fdc
 # ╟─df078657-96e0-4918-b2d9-cc725c7845ca
 # ╟─c53c0426-fb20-4298-bd30-9151802fd7c0
+# ╠═52d2e6d6-3093-4f3e-b475-664eaf321345
+# ╠═60ef94df-fdc3-4cfa-8523-c8a0fb67aba9
+# ╠═dbe46c81-29f6-4511-a7c8-808f3cf2c60d
+# ╠═e9de2598-3d08-4105-ba1b-497d4420d575
 # ╠═b2609b83-75a7-4cf6-8a8b-9615d6618d1d
 # ╠═9a150a1e-0d87-4c01-8111-88a4b4a53dd9
-# ╠═35026641-2593-4a28-ac96-305f1a57084e
+# ╠═4c3fc3a6-9c7f-4c8c-9538-4060851cb825
+# ╠═8ee088d5-b468-4c91-ac11-c4e1d8da15a4
+# ╠═34a742d3-6c62-4622-9af9-e56979736796
 # ╟─8c25c52b-a892-4612-ac76-f2db398a8102
 # ╟─8ccc4247-0cdd-47ca-8e8a-3a5d735ab3e3
 # ╟─1dfe1afe-5371-4e37-be9a-5cfcc8495b01
@@ -279,13 +307,13 @@ xy1 = [box1[1] - xoffset, box1[2] - yoffset]
 # ╠═efcf699c-bb94-4659-a494-0abab0685360
 # ╠═dfede8c9-88d9-49ab-9775-73940b897e90
 # ╠═402fc274-21c9-4b1c-afdd-d5dd89c6fe2a
-# ╟─60ef94df-fdc3-4cfa-8523-c8a0fb67aba9
 # ╟─92bee788-0077-4964-b49a-5bf320ae0f3e
 # ╠═1d67b8a2-4e15-4b1a-893d-c20e922e8e62
 # ╠═1ec9b994-e5cd-4b86-b249-4b1389d5b191
 # ╠═721e5ec1-8648-4844-846f-7dee53318ea8
-# ╟─bb012734-9d1a-4521-94b9-3dcc1f5b2310
+# ╠═bb012734-9d1a-4521-94b9-3dcc1f5b2310
 # ╠═7b7e59be-17d5-4694-9273-3cc4b9d510e9
+# ╠═d585578b-cea2-4319-a644-704a4fa4a274
 # ╠═b02b2c35-ea16-4604-8505-6d853b9564ec
 # ╟─10d5da87-81f7-4e0d-8ce3-b7aa505adc5c
 # ╟─9aebe925-cc2d-400e-896f-4670d02edfd4
