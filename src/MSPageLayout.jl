@@ -41,6 +41,8 @@ export scholion_height
 
 export model_traditional_layout
 
+export traditional_score
+
 #=
 export PageSkeleton
 export TSPair
