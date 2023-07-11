@@ -72,7 +72,7 @@ $(SIGNATURES)
 """
 function iliad_y_tops(pgdata::PageData; digits = 3)
     offset = pageoffset_top(pgdata, digits = digits)
-    raw = map(pr -> iliad_y_top(pr, digits = digits) - offset, pgdata.textpairs)
+    raw = map(pr -> iliad_y_top(pr, digits = digits, offset = offset), pgdata.textpairs)
     map(f -> round(f, digits = digits), raw)
 end
 
@@ -82,7 +82,7 @@ $(SIGNATURES)
 """
 function scholion_y_tops(pgdata::PageData; digits = 3)
     offset = pageoffset_top(pgdata, digits = digits)
-    raw = map(pr -> scholion_y_top(pr, digits = digits) - offset, pgdata.textpairs)
+    raw = map(pr -> scholion_y_top(pr, digits = digits, offset = offset), pgdata.textpairs)
     map(f -> round(f, digits = digits), raw)
 end
 """Compute top 'y' value relative to page box for main scholia on pageData
@@ -91,18 +91,28 @@ $(SIGNATURES)
 function mainscholion_y_tops(pgdata::PageData; digits = 3)
     texts = filter(pr -> workid(pr.scholion) == "msA", pgdata.textpairs)
     offset = pageoffset_top(pgdata, digits = digits)
-    raw = map(pr -> scholion_y_top(pr, digits = digits) - offset, texts)
+    raw = map(pr -> scholion_y_top(pr, digits = digits, offset = offset), texts)
     map(f ->round(f, digits = digits), raw)
 end
 
 """Compute height of scholia on page.
 $(SIGNATURES)
 """
-function scholion_heights(pgdata::PageData; digits = 3)
-    raw = map(pr -> scholion_height(pr, digits = digits), pgdata.textpairs)
+function scholion_heights(pgdata::PageData; digits = 3,)
+    scale = pagescale_y(pgdata, digits = digits)
+    offset = pageoffset_top(pgdata, digits = digits)
+    raw = map(pr -> scholion_height(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
     map(ht -> round(ht, digits = digits), raw)
 end
-
+"""Compute width of scholia on page.
+$(SIGNATURES)
+"""
+function scholion_widths(pgdata::PageData; digits =3)
+    scale = pagescale_x(pgdata, digits = digits)
+    offset = pageoffset_left(pgdata, digits = digits)
+    raw = map(pr -> scholion_width(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
+    map(ht-> round(ht, digits = digits), raw)
+end
 """Find top of page bound on documentary image.
 $(SIGNATURES)
 """
@@ -110,9 +120,26 @@ function pageoffset_top(pgdata::PageData; digits = 3)
     imagefloats(pgdata.imagezone, digits = digits)[2]
 end
 
-
-
-
+"""Find left of page bound on documentary image
+$(SIGNATURES)
+"""
+function pageoffset_left(pgdata::PageData; digits = 3)
+    imagefloats(pgdata.imagezone, digits = digits)[1]
+end
+"""Find x axis scale of page bound on documentary image
+$(SIGNATURES)
+"""
+function pagescale_x(pgdata::PageData; digits = 3)
+    w = imagefloats(pgdata.imagezone, digits = digits)[3]
+    round(1/w, digits = digits)
+end
+"""Find y axis scale of page bound on documentary image
+$(SIGNATURES)
+"""
+function pagescale_y(pgdata::PageData; digits = 3)
+    h = imagefloats(pgdata.imagezone, digits = digits)[4]
+    round(1/h, digits = digits)
+end
 
 
 

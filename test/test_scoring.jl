@@ -2,8 +2,12 @@
     pgurn = Cite2Urn("urn:cite2:hmt:msA.v1:55r")
     pgdata = pageData(pgurn)
     results = traditional_score(pgdata)
-
-    @test_broken results == nothing
+    successes = results.successes
+    failures = results.failures
+    @test_broken results isa PageScore
+    @test_broken successes < 0
+    @test_broken failures < 0
+    @test_broken successes + failures == length(pgdata.textpairs)
 
 end
 

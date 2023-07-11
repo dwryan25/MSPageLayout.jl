@@ -8,7 +8,6 @@ struct PageScore
 end
 
 """Score number of scholia correctly placed on page using traditional model. Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
-
 $(SIGNATURES)
 """
 function traditional_score(pgdata::PageData; threshold = 0.1, siglum = "msA")::PageScore
