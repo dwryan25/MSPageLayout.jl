@@ -94,6 +94,9 @@ md"""*Select a page and click* `Submit` $(@bind pg confirm(Select(menu)))"""
 # ╔═╡ 1a94d396-9dd1-43e3-b369-f9efc29eb6b3
 md"""### Manuscript page $(objectcomponent(pg))"""
 
+# ╔═╡ 6b410377-bb01-4b45-ae44-f453ac12e688
+md"""> **Diagramming**"""
+
 # ╔═╡ 92bee788-0077-4964-b49a-5bf320ae0f3e
 md"> **Image service**"
 
@@ -122,20 +125,17 @@ function pageimage(pg, roituples; ht = 200)
 	end
 end
 
-# ╔═╡ feb47892-4b1d-4a8e-a60a-df131193fd18
-pgimg = pageimage(pg, rois, ht = chosenht)
-
 # ╔═╡ 7b7e59be-17d5-4694-9273-3cc4b9d510e9
-img =  isnothing(pgimg) ? nothing : RGBA.(pgimg, alpha)
+img = begin
+	pgimg = pageimage(pg, rois, ht = chosenht)
+	isnothing(pgimg) ? nothing : RGBA.(pgimg, alpha)
+end
 
 # ╔═╡ b02b2c35-ea16-4604-8505-6d853b9564ec
 (h,w) = isnothing(img) ? (nothing, nothing) : img |> size
 
 # ╔═╡ e3b939a5-d829-4b87-8ec5-0ae631763fdc
 isnothing(img) ? md"" : md"""Image height and width: **$(h)** x **$(w)**"""
-
-# ╔═╡ 6b410377-bb01-4b45-ae44-f453ac12e688
-md"""> **Diagramming**"""
 
 # ╔═╡ e21a5c08-ff3b-4afc-9868-81c599ebd96e
 hpad = isnothing(h) ? nothing : h + pagepadding
@@ -173,14 +173,13 @@ end
 # ╠═def3fff3-3b5c-478f-9f26-3466d95e4f8c
 # ╠═87a9f7d2-0c6d-4fff-8b2c-dbad2fcffd05
 # ╠═1dfe1afe-5371-4e37-be9a-5cfcc8495b01
+# ╟─6b410377-bb01-4b45-ae44-f453ac12e688
+# ╠═e21a5c08-ff3b-4afc-9868-81c599ebd96e
+# ╠═efcf699c-bb94-4659-a494-0abab0685360
 # ╟─92bee788-0077-4964-b49a-5bf320ae0f3e
 # ╠═1d67b8a2-4e15-4b1a-893d-c20e922e8e62
 # ╠═1ec9b994-e5cd-4b86-b249-4b1389d5b191
 # ╠═721e5ec1-8648-4844-846f-7dee53318ea8
 # ╟─bb012734-9d1a-4521-94b9-3dcc1f5b2310
 # ╠═7b7e59be-17d5-4694-9273-3cc4b9d510e9
-# ╠═feb47892-4b1d-4a8e-a60a-df131193fd18
 # ╠═b02b2c35-ea16-4604-8505-6d853b9564ec
-# ╟─6b410377-bb01-4b45-ae44-f453ac12e688
-# ╠═e21a5c08-ff3b-4afc-9868-81c599ebd96e
-# ╠═efcf699c-bb94-4659-a494-0abab0685360
