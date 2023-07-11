@@ -122,6 +122,9 @@ iliadlines = filter(pagetexts) do txt
 	startswith(workcomponent(txt), "tlg0012.tlg001")
 end
 
+# ╔═╡ a9db86db-1512-4275-a522-3a4602cf12c8
+iliadlines
+
 # ╔═╡ c53ff7ed-f849-4f46-8bf6-b2f72b23dc9f
 iliadimages = map(iliadlines) do txt
 	imagesfortext(txt, dse)[1]
@@ -179,20 +182,6 @@ hpad = isnothing(h) ? nothing : h + pagepadding
 # ╔═╡ efcf699c-bb94-4659-a494-0abab0685360
 wpad = isnothing(w) ? nothing : w + pagepadding
 
-# ╔═╡ b2609b83-75a7-4cf6-8a8b-9615d6618d1d
-if isnothing(img)
-	nothing
-else
-@draw begin
-	# Set coordinate system with origin at top left:
-	translate(-1 * wpad/2, -1 * hpad/2)
-	placeimage(img,O)
-
-
-	
-end  wpad hpad
-end
-
 # ╔═╡ 10d5da87-81f7-4e0d-8ce3-b7aa505adc5c
 md"> **Util that belongs in package**"
 
@@ -223,6 +212,21 @@ end
 # ╔═╡ 9a150a1e-0d87-4c01-8111-88a4b4a53dd9
 box1 = iliadrois[1] * h 
 
+# ╔═╡ b2609b83-75a7-4cf6-8a8b-9615d6618d1d
+if isnothing(img)
+	nothing
+else
+@draw begin
+	# Set coordinate system with origin at top left:
+	translate(-1 * wpad/2, -1 * hpad/2)
+	placeimage(img,O)
+
+	sethue("blue")
+	line(Point(box1[1], box1[2]), Point(box1[3], box1[2]), :stroke)
+	
+end  wpad hpad
+end
+
 # ╔═╡ 402fc274-21c9-4b1c-afdd-d5dd89c6fe2a
 	pagepcts = imagefloats(pageroiurn)
 
@@ -234,6 +238,9 @@ end
 
 # ╔═╡ e9de2598-3d08-4105-ba1b-497d4420d575
 (xoffset, yoffset) = (pageroi[1], pageroi[2])
+
+# ╔═╡ 35026641-2593-4a28-ac96-305f1a57084e
+xy1 = [box1[1] - xoffset, box1[2] - yoffset]
 
 # ╔═╡ Cell order:
 # ╠═b8e7998b-7170-4f28-b2b7-e1392d20943e
@@ -250,6 +257,7 @@ end
 # ╟─c53c0426-fb20-4298-bd30-9151802fd7c0
 # ╠═b2609b83-75a7-4cf6-8a8b-9615d6618d1d
 # ╠═9a150a1e-0d87-4c01-8111-88a4b4a53dd9
+# ╠═35026641-2593-4a28-ac96-305f1a57084e
 # ╟─8c25c52b-a892-4612-ac76-f2db398a8102
 # ╟─8ccc4247-0cdd-47ca-8e8a-3a5d735ab3e3
 # ╟─1dfe1afe-5371-4e37-be9a-5cfcc8495b01
@@ -262,7 +270,8 @@ end
 # ╠═87a9f7d2-0c6d-4fff-8b2c-dbad2fcffd05
 # ╟─39f32acc-2eb1-4e28-8fc5-9f9f2d29803c
 # ╠═e28b9476-33be-4503-9f22-e66fe8b6e463
-# ╟─a6c7dfaa-0053-4b00-8bde-9d69c0e5e355
+# ╠═a6c7dfaa-0053-4b00-8bde-9d69c0e5e355
+# ╠═a9db86db-1512-4275-a522-3a4602cf12c8
 # ╟─c53ff7ed-f849-4f46-8bf6-b2f72b23dc9f
 # ╠═cb84450f-72b8-4e7d-9903-8edbd8781fed
 # ╟─6b410377-bb01-4b45-ae44-f453ac12e688
