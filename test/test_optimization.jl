@@ -3,7 +3,7 @@
     pagedata = pageData(pgurn)
 
     expected_results = [-1000]
-    actual_results = model_traditional_layout(pagedata)
+    actual_results = model_traditional_layout(pagedata, siglum = nothing)
     @test_broken actual_results == expected_results
    
     @test typeof(actual_results) == Vector{Float64}
