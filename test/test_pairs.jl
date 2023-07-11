@@ -20,11 +20,11 @@
     @test scholion_x_right(textpair) == 0.741
     @test scholion_x_center(textpair) == 0.303
 
-    @test_broken iliad_y_top(textpair) == 0.0
-    @test_broken iliad_y_bottom(textpair) ==  0.0
-    @test_broken iliad_y_center(textpair) == 0.0
+    @test iliad_y_top(textpair) == 0.231
+    @test iliad_y_bottom(textpair) ==  0.26
+    @test iliad_y_center(textpair) == 0.246
 
-    @test_broken iliad_x_left(textpair) == 0.0
-    @test_broken iliad_x_right(textpair) == 0.0
-    @test_broken iliad_x_center(textpair) == 0.0
+    @test iliad_x_left(textpair) == 0.15
+    @test iliad_x_right(textpair) == 0.54
+    @test iliad_x_center(textpair) == 0.345
 end

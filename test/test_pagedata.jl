@@ -7,11 +7,13 @@
     @test length(pgdata.textpairs) == expectedscholia
 
 
-    expected_offset = 0
-    @test_broken pageoffset_top(pgdata) == expected_offset
+    expected_offset = 0.065
+    @test pageoffset_top(pgdata) == expected_offset
 
-    expected_tops = []
-    @test_broken scholion_y_tops(pgdata) == expected_tops
+    expected_tops = [0.256, 0.687, 0.724, 0.363, 0.510, 0.623, 0.307]
+    @test scholion_y_tops(pgdata) == expected_tops
+    expected_maintops = [0.256]
+    @test_broken mainscholion_y_tops(pgdata) == expected_maintops
 end
 
 

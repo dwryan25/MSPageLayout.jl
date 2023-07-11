@@ -91,7 +91,7 @@ $(SIGNATURES)
 function iliad_x_center(textpair::BoxedTextPair; digits = 3)
     r = iliad_x_right(textpair, digits = digits)
     l = iliad_x_left(textpair, digits = digits)
-    (r - l) / 2
+    round((r + l) / 2, digits = digits)
 end
 
 """Compute top edge of `iliadbox`.
