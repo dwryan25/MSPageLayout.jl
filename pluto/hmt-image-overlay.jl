@@ -62,9 +62,6 @@ md"""*Set image transparency* $(@bind alpha Slider(0:0.1:1.0, show_value=true, d
 # ╔═╡ c53c0426-fb20-4298-bd30-9151802fd7c0
 md"""*Padding* $(@bind pagepadding Slider(0:15, show_value=true))"""
 
-# ╔═╡ dbe46c81-29f6-4511-a7c8-808f3cf2c60d
-
-
 # ╔═╡ 8c25c52b-a892-4612-ac76-f2db398a8102
 html"""
 <br/><br/><br/><br/><br/>
@@ -233,7 +230,7 @@ pageroi = begin
 	[pagepcts[1] * w, pagepcts[2] * h, pagepcts[3] * w, pagepcts[4] * h]
 end
 
-# ╔═╡ e9de2598-3d08-4105-ba1b-497d4420d575
+# ╔═╡ a1257271-0069-43cc-b12f-076e92b3ec8b
 (xoffset, yoffset) = (pageroi[1], pageroi[2])
 
 # ╔═╡ 8ee088d5-b468-4c91-ac11-c4e1d8da15a4
@@ -254,8 +251,19 @@ else
 
 	sethue("green")
 	for ir in iliadrois
+		#x =  ir[1] * srcw 
+		#y = ir[2] * srch 
+		x = ir[1] * wpad
+		y = ir[2] * hpad
+		line(Point(x,y), Point(x + 200, y), :stroke)
+	end
+
+	sethue("blue")
+	for ir in iliadrois
 		x =  ir[1] * srcw 
 		y = ir[2] * srch 
+		#x = ir[1] * wpad
+		#y = ir[2] * hpad
 		line(Point(x,y), Point(x + 200, y), :stroke)
 	end
 	
@@ -278,9 +286,8 @@ end
 # ╟─df078657-96e0-4918-b2d9-cc725c7845ca
 # ╟─c53c0426-fb20-4298-bd30-9151802fd7c0
 # ╠═52d2e6d6-3093-4f3e-b475-664eaf321345
+# ╠═a1257271-0069-43cc-b12f-076e92b3ec8b
 # ╠═60ef94df-fdc3-4cfa-8523-c8a0fb67aba9
-# ╠═dbe46c81-29f6-4511-a7c8-808f3cf2c60d
-# ╠═e9de2598-3d08-4105-ba1b-497d4420d575
 # ╠═b2609b83-75a7-4cf6-8a8b-9615d6618d1d
 # ╠═9a150a1e-0d87-4c01-8111-88a4b4a53dd9
 # ╠═4c3fc3a6-9c7f-4c8c-9538-4060851cb825
