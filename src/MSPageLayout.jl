@@ -38,6 +38,7 @@ export iliad_x_left, iliad_x_right, iliad_x_center
 export iliad_y_top, iliad_y_bottom, iliad_y_center
 
 export scholion_height
+export exteriorzone_width
 
 export model_traditional_layout
 

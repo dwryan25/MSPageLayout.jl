@@ -107,11 +107,15 @@ end
 """Compute width of scholia on page.
 $(SIGNATURES)
 """
-function scholion_widths(pgdata::PageData; digits =3)
+function scholion_widths(pgdata::PageData; digits = 3)
     scale = pagescale_x(pgdata, digits = digits)
     offset = pageoffset_left(pgdata, digits = digits)
     raw = map(pr -> scholion_width(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
     map(ht-> round(ht, digits = digits), raw)
+end
+
+function scholion_area(pgdata::PageData; digits = 3)
+    scale = pagescale_x
 end
 """Find top of page bound on documentary image.
 $(SIGNATURES)
