@@ -29,7 +29,7 @@ end
 """Compute left edge of `scholionbox`.
 $(SIGNATURES)
 """
-function scholion_x_left(textpair::BoxedTextPair; digits = 3, scale = 1.0 offset = 0)
+function scholion_x_left(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     round((imagefloats(textpair.scholionbox, digits = digits)[1] - offset) * scale, digits = digits)
 end
 
@@ -54,7 +54,7 @@ end
 """Compute top edge of `scholionbox`.
 $(SIGNATURES)
 """
-function scholion_y_top(textpair::BoxedTextPair; scale = 1.0, digits = 3, offset = 0)
+function scholion_y_top(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     round((imagefloats(textpair.scholionbox, digits = digits)[2] - offset) * scale, digits = digits)
 end
 
@@ -70,7 +70,7 @@ end
 """Compute center in y  of `scholionbox` within page zone.
 $(SIGNATURES)
 """
-function scholion_y_center(textpair::BoxedTextPair; digits = 3)
+function scholion_y_center(textpair::BoxedTextPair;digits = 3, scale = 1.0, offset = 0)
     b = scholion_y_bottom(textpair, digits = digits, scale = scale, offset = offset)
     t = scholion_y_top(textpair, digits = digits, offset = offset)
     round((t + b) / 2, digits = digits)
@@ -79,7 +79,7 @@ end
 """Compute left edge of `iliadbox`.
 $(SIGNATURES)
 """
-function iliad_x_left(textpair::BoxedTextPair; digits = 3, scale = 1.0 offset = 0)
+function iliad_x_left(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     round((imagefloats(textpair.iliadbox, digits = digits)[1] - offset) * scale, digits = digits)
 end
 
@@ -95,7 +95,7 @@ end
 """Compute center in x  of `iliadbox` within page zone.
 $(SIGNATURES)
 """
-function iliad_x_center(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = offset)
+function iliad_x_center(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     r = iliad_x_right(textpair, digits = digits, scale = scale, offset = offset)
     l = iliad_x_left(textpair, digits = digits, offset = offset)
     round((r + l) / 2, digits = digits)
@@ -104,8 +104,8 @@ end
 """Compute top edge of `iliadbox`.
 $(SIGNATURES)
 """
-function iliad_y_top(textpair::BoxedTextPair; digits = 3, offset = 0)
-    imagefloats(textpair.iliadbox, digits = digits)[2] - offset
+function iliad_y_top(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
+    round((imagefloats(textpair.iliadbox, digits = digits)[2] - offset) * scale, digits = digits)
 end
 
 """Compute bottom edge of `iliadbox` within page zone.
@@ -115,7 +115,6 @@ function iliad_y_bottom(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset
     floats = imagefloats(textpair.iliadbox, digits = digits)
     round(((floats[2] - offset) * scale) + (floats[4] * scale), digits = digits)
 end
-
 
 """Compute center in y  of `iliadbox` within page zone.
 $(SIGNATURES)
@@ -129,7 +128,7 @@ end
 Compute area of scholion.
 $(SIGNATURES)
 """
-function scholion_area(textpair::BoxedTextPair; scale = 1.0, offset = 0 digits = 3)
+function scholion_area(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     length = scholion_height(textpair, scale = scale, offset = offset, digits = digits)
     width = scholion_width(textpair, scale = scale, offset = offset, digits = digits)
     round(length*width, digits = digits)

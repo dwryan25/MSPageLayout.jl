@@ -72,7 +72,8 @@ $(SIGNATURES)
 """
 function iliad_y_tops(pgdata::PageData; digits = 3)
     offset = pageoffset_top(pgdata, digits = digits)
-    raw = map(pr -> iliad_y_top(pr, digits = digits, offset = offset), pgdata.textpairs)
+    scale = pagescale_y(pgdata, digits = digits)
+    raw = map(pr -> iliad_y_top(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
     map(f -> round(f, digits = digits), raw)
 end
 
@@ -82,7 +83,8 @@ $(SIGNATURES)
 """
 function scholion_y_tops(pgdata::PageData; digits = 3)
     offset = pageoffset_top(pgdata, digits = digits)
-    raw = map(pr -> scholion_y_top(pr, digits = digits, offset = offset), pgdata.textpairs)
+    scale = pagescale_y(pgdata, digits = digits)
+    raw = map(pr -> scholion_y_top(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
     map(f -> round(f, digits = digits), raw)
 end
 """Compute top 'y' value relative to page box for main scholia on pageData
@@ -91,7 +93,8 @@ $(SIGNATURES)
 function mainscholion_y_tops(pgdata::PageData; digits = 3)
     texts = filter(pr -> workid(pr.scholion) == "msA", pgdata.textpairs)
     offset = pageoffset_top(pgdata, digits = digits)
-    raw = map(pr -> scholion_y_top(pr, digits = digits, offset = offset), texts)
+    scale = pagescale_y(pgdata, digits = digits)
+    raw = map(pr -> scholion_y_top(pr, digits = digits, scale = scale, offset = offset), texts)
     map(f ->round(f, digits = digits), raw)
 end
 
@@ -113,9 +116,19 @@ function scholion_widths(pgdata::PageData; digits = 3)
     raw = map(pr -> scholion_width(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
     map(ht-> round(ht, digits = digits), raw)
 end
-
-function scholion_area(pgdata::PageData; digits = 3)
-    scale = pagescale_x
+"""Computes the area of all scholia on a page
+$(SIGNATURES)
+"""
+function scholion_areas(pgdata::PageData; digits = 3)
+    widths = scholion_widths(pgdata, digits = digits)
+    lengths = scholion_lengths(pgdata, digits = digits)
+    if lengths(widths) == length(lengths)
+        throw("")
+    end
+    areas = []
+    for i in widths
+        push!(areas, widths[i] * lengths[i])
+    end
 end
 """Find top of page bound on documentary image.
 $(SIGNATURES)

@@ -27,4 +27,7 @@
     @test iliad_x_left(textpair) == 0.15
     @test iliad_x_right(textpair) == 0.54
     @test iliad_x_center(textpair) == 0.345
+
+    @test_broken scholion_area(textpair) == .188
+
 end
