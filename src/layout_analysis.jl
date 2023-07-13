@@ -22,7 +22,7 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
         pgdata.imagezone
     )
 
-    # Things we'll need to optimize:
+    # Things we'll need in order to optimize:
     #
     # 1. y values of Iliad lines:
     iliad_ys = iliad_y_tops(filteredPage, digits = digits)
@@ -54,6 +54,38 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
     opt_ys= split(stringvalue, ",")
     opt_ys= map(x->round(parse(Float64, x), digits = digits), opt_ys)
     return opt_ys
+end
+
+function secondmodel_traditional_layout(pgdata::PageData, new_ys::Vector{Float64}; siglum = "msA", digits = 3)
+    texts = BoxedTextPair[]
+    if isnothing(siglum) 
+        texts = pgdata.textpairs
+    else
+        texts = filter(pr -> workid(pr.scholion) == siglum, pgdata.textpairs)
+    end
+
+    # `PageData` structure with texts filtered to include only scholia
+    # matching `siglum`:
+    filteredPage = PageData(
+        pgdata.pageurn,
+        texts,
+        pgdata.imagezone
+    )
+    #Things we'll need in order to optimize:
+    #1. iliad line center x values
+    iliad_midpoints = iliad_x_centers(pgdata)
+    #2. scholia areas
+    areas = scholion_areas(pgdata)
+
+    #Constraints:
+    # 1. If the corresponding y is less than the top of the exterior zone and greater than the bottom,
+    #    then the  x value lies between 0 and the width of the whole page.
+    # 2. If the corresponding y value is in the middle section, differentiate between verso and recto.
+    # 3. For recto pages x is between the width of the exterior zone and the width of the whole page
+    # 4. For verso pages x is between 0 and the width of th exterior zone
+
+    # Objective: Minimize height of scholia 
+
 end
 
 

@@ -4,10 +4,11 @@
     results = traditional_score(pgdata)
     successes = results.successes
     failures = results.failures
+    mainscholia = filter(pr -> workid(pr.scholion) == "msA", pgdata.textpairs)
     @test results isa PageScore
-    @test successes < 0
-    @test failures < 0
-    @test successes + failures == length(pgdata.textpairs)
+    @test successes > 0
+    @test failures > 0
+    @test successes + failures == length(mainscholia)
 
 end
 

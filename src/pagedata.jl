@@ -4,6 +4,7 @@ struct PageData
     pageurn::Cite2Urn
     textpairs::Vector{BoxedTextPair}
     imagezone::Cite2Urn
+    folioside::String
 end
 
 """Construct a `PageData` object for the
@@ -51,11 +52,18 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
 
     allpagerois = hmt_pagerois(hmtdata)
     matchingrois = filter(pr -> pr[1] == pageurn, allpagerois.index)
+    #mark as verso or recto page
+    if endswith(pageurn.urn, "r")
+        pagetype = "recto"
+    elseif endswith(pageurn.urn, "v")
+        pagetype = "verso"
+    end
     if length(matchingrois) == 1
         PageData(
             pageurn,
             filter(pr -> ! isnothing(pr), boxedpairs),
-            matchingrois[1][2]
+            matchingrois[1][2],
+            pagetype
         )
   
     else
@@ -134,6 +142,17 @@ function scholion_areas(pgdata::PageData; digits = 3)
     
     return areas
 end
+
+"""Compute all the center x values for iliad text on a page
+$(SIGNATURES)
+"""
+function iliad_x_centers(pgdata::PageData; digits = 3)
+    scale = pagescale_x(pgdata, digits = digits)
+    offset = pageoffset_left(pgdata, digits = digits)
+    raw = map(pr -> iliad_x_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
+    map(xcent -> round(xcent, digits = digits), raw)
+end
+
 """Find top of page bound on documentary image.
 $(SIGNATURES)
 """

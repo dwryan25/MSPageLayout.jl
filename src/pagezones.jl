@@ -1,15 +1,34 @@
 #Write functions to separately retrieve the width of each zone (top, exterior, and middle)
 
 """Computes the width of the proposed exterior zone on a page differentiating between verso and recto pages.
+$(SIGNATURES)
 """
 function exteriorzone_width(pgdata::PageData; digits = 3)
-    w::Int64
     scale = pagescale_x(pgdata, digits = digits)
-    offset = pageoffset_x(pgdata, digits = digits)
-    if endswith(pgdata.pageurn, "r")
+    offset = pageoffset_left(pgdata, digits = digits)
+    if endswith(pgdata.pageurn.urn, "r")
         w = 1 - iliad_x_right(pgdata.textpairs[1], scale = scale, offset = offset, digits = digits)
-    elseif endswith(pgdata.pageurn, "v")
+    elseif endswith(pgdata.pageurn.urn, "v")
        w = iliad_x_left(pgdata.textpairs[1], scale = scale, offset = offset, digits = digits)
     end
     return w
+end
+
+"""Compute the bottom y value of the exterior zone
+$(SIGNATURES)
+"""
+function exteriorzone_y_bottom(pgdata::PageData; digits = 3)
+    n = length(pgdata.textpairs)
+    scale = pagescale_y(pgdata, digits = digits)
+    offset = pageoffset_top(pgdata, digits = digits)
+    iliad_y_bottom(pgdata.textpairs[n], scale = scale, offset = offset, digits = digits)
+end
+
+"""Compute the top y value of the exterior zone
+$(SIGNATURES)
+"""
+function exteriorzone_y_top(pgdata::PageData; digits =3)
+    scale = pagescale_y(pgdata, digits = digits)
+    offset = pageoffset_top(pgdata, digits = digits)
+    iliad_y_top(pgdata.textpairs[1], scale = scale, offset = offset, digits = digits)
 end
