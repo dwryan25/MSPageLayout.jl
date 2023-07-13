@@ -24,7 +24,7 @@ include("score_results.jl")
 
 export PageData, pageData
 # functions page PageData:
-export scholion_y_tops, scholion_y_centers, scholion_heights, mainscholion_y_tops
+export scholion_y_tops, scholion_y_centers, scholion_heights, mainscholion_y_tops, scholion_widths, scholion_areas
 export iliad_y_tops
 export pageoffset_top, pageoffset_left
 export pagescale_y, pagescale_x
@@ -37,11 +37,15 @@ export scholion_y_top, scholion_y_bottom, scholion_y_center
 export iliad_x_left, iliad_x_right, iliad_x_center
 export iliad_y_top, iliad_y_bottom, iliad_y_center
 
-export scholion_height
+export scholion_height, scholion_width, scholion_area
+
+#functions on pagezones
 export exteriorzone_width
 
+#functions on layout_analysis
 export model_traditional_layout
 
+#functions on scoring
 export traditional_score
 
 #=

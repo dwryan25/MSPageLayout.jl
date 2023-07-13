@@ -121,14 +121,18 @@ $(SIGNATURES)
 """
 function scholion_areas(pgdata::PageData; digits = 3)
     widths = scholion_widths(pgdata, digits = digits)
-    lengths = scholion_lengths(pgdata, digits = digits)
-    if lengths(widths) == length(lengths)
-        throw("")
+    lengths = scholion_heights(pgdata, digits = digits)
+    if length(widths) != length(lengths)
+        throw("Error: Missing or extra data in widths or lengths vector")
+    else 
+        n = length(widths)
     end
     areas = []
-    for i in widths
-        push!(areas, widths[i] * lengths[i])
+    for i in 1:n
+        push!(areas, round(widths[i] * lengths[i], digits = digits))
     end
+    
+    return areas
 end
 """Find top of page bound on documentary image.
 $(SIGNATURES)

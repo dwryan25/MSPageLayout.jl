@@ -4,10 +4,10 @@
     results = traditional_score(pgdata)
     successes = results.successes
     failures = results.failures
-    @test_broken results isa PageScore
-    @test_broken successes < 0
-    @test_broken failures < 0
-    @test_broken successes + failures == length(pgdata.textpairs)
+    @test results isa PageScore
+    @test successes < 0
+    @test failures < 0
+    @test successes + failures == length(pgdata.textpairs)
 
 end
 

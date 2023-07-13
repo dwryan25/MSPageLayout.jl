@@ -3,7 +3,7 @@
     pgdata = pageData(pgurn)
 
     extwidth = exteriorzone_width(pgdata)
-    expected = -1.0
+    expected = 0.385
     @test extwidth isa Int64
-    @test_broken extwdith == expected
+    @test extwdith == expected
 end

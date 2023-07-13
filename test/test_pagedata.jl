@@ -16,10 +16,10 @@
     expected_maintops = [0.296, 0.794, 0.837]
     @test mainscholion_y_tops(pgdata) == expected_maintops
 
-    @test scholion_heights(pgdata) == [0.058, 0.057, 0.039, 0.062, 0.049, 0.03, .021]
-    @test_broken scholion_widths(pgdata) == []
+    @test scholion_heights(pgdata) == [0.058, 0.057, 0.038, 0.061, 0.048, 0.03, 0.021]
+    @test scholion_widths(pgdata) == [0.227, 0.696, 0.696, 0.069,0.064, 0.04, 0.054]
 
-    @test_broken scholion_areas(pgdata) == []
+    @test scholion_areas(pgdata) == [0.013, 0.04, 0.026, 0.004, 0.003, 0.001, 0.001]
 end
 
 

@@ -14,14 +14,14 @@ $(SIGNATURES)
 """
 function scholion_height(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     b = scholion_y_bottom(textpair, digits = digits, scale = scale, offset = offset)
-    t = scholion_y_top(textpair, digits = digits, offset = offset)
+    t = scholion_y_top(textpair, digits = digits, scale = scale, offset = offset)
     round(b - t, digits = digits)
 end
 """Compute width of scholion text box
 $(SIGNATURES)
 """
 function scholion_width(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
-    l = scholion_x_left(textpair, digits = digits, offset = offset)
+    l = scholion_x_left(textpair, digits = digits, scale = scale, offset = offset)
     r = scholion_x_right(textpair, digits = digits, scale = scale, offset = offset)
     round(r - l, digits = digits)
 end
@@ -47,7 +47,7 @@ $(SIGNATURES)
 """
 function scholion_x_center(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     r = scholion_x_right(textpair, digits = digits, scale = scale, offset = offset)
-    l = scholion_x_left(textpair, digits = digits, offset = offset)
+    l = scholion_x_left(textpair, digits = digits, scale = scale, offset = offset)
     round((r - l) / 2, digits = digits)
 end
 
@@ -72,7 +72,7 @@ $(SIGNATURES)
 """
 function scholion_y_center(textpair::BoxedTextPair;digits = 3, scale = 1.0, offset = 0)
     b = scholion_y_bottom(textpair, digits = digits, scale = scale, offset = offset)
-    t = scholion_y_top(textpair, digits = digits, offset = offset)
+    t = scholion_y_top(textpair, digits = digits, scale = scale, offset = offset)
     round((t + b) / 2, digits = digits)
 end
 
@@ -97,7 +97,7 @@ $(SIGNATURES)
 """
 function iliad_x_center(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     r = iliad_x_right(textpair, digits = digits, scale = scale, offset = offset)
-    l = iliad_x_left(textpair, digits = digits, offset = offset)
+    l = iliad_x_left(textpair, digits = digits, scale = scale, offset = offset)
     round((r + l) / 2, digits = digits)
 end
 
@@ -121,7 +121,7 @@ $(SIGNATURES)
 """
 function iliad_y_center(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     b = iliad_y_bottom(textpair, digits = digits, scale = scale, offset = offset)
-    t = iliad_y_top(textpair, digits = digits)
+    t = iliad_y_top(textpair, digits = digits, scale = scale, offset = offset)
     round((t + b) / 2, digits = digits)
 end
 """
@@ -129,7 +129,7 @@ Compute area of scholion.
 $(SIGNATURES)
 """
 function scholion_area(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
-    length = scholion_height(textpair, scale = scale, offset = offset, digits = digits)
-    width = scholion_width(textpair, scale = scale, offset = offset, digits = digits)
+    length = scholion_height(textpair, digits = digits, scale = scale, offset = offset)
+    width = scholion_width(textpair, digits = digits, scale = scale, offset = offset)
     round(length*width, digits = digits)
 end

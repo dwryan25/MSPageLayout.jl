@@ -15,10 +15,11 @@
     @test scholion_y_center(textpair) == 0.136
     @test scholion_height(textpair) == 0.031
 
-
     @test scholion_x_left(textpair) == 0.135
     @test scholion_x_right(textpair) == 0.741
     @test scholion_x_center(textpair) == 0.303
+    @test scholion_width(textpair) == 0.606
+
 
     @test iliad_y_top(textpair) == 0.231
     @test iliad_y_bottom(textpair) ==  0.26
@@ -28,6 +29,5 @@
     @test iliad_x_right(textpair) == 0.54
     @test iliad_x_center(textpair) == 0.345
 
-    @test_broken scholion_area(textpair) == .188
-
+    @test scholion_area(textpair) == 0.019
 end
