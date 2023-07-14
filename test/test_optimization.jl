@@ -8,5 +8,8 @@
    
     @test typeof(actual_results) == Vector{Float64}
     @test length(actual_results) == length(pagedata.textpairs)
+
+
+    @test_broken secondmodel_traditional_layout(pagedata) == []
     
 end

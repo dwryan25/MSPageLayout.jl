@@ -17,6 +17,7 @@
     @test mainscholion_y_tops(pgdata) == expected_maintops
 
     @test_broken iliad_x_centers(pgdata) = []
+    @test_broken iliad_y_centers(pgdata) = []
 
     @test scholion_heights(pgdata) == [0.058, 0.057, 0.038, 0.061, 0.048, 0.03, 0.021]
     @test scholion_widths(pgdata) == [0.227, 0.696, 0.696, 0.069,0.064, 0.04, 0.054]

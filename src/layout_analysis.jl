@@ -19,7 +19,8 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
     filteredPage = PageData(
         pgdata.pageurn,
         texts,
-        pgdata.imagezone
+        pgdata.imagezone,
+        pgdata.folioside
     )
 
     # Things we'll need in order to optimize:
@@ -73,10 +74,11 @@ function secondmodel_traditional_layout(pgdata::PageData, new_ys::Vector{Float64
     )
     #Things we'll need in order to optimize:
     #1. iliad line center x values
-    iliad_midpoints = iliad_x_centers(pgdata)
+    iliad_x_centroids = iliad_x_centers(pgdata)
+    iliad_y_centroids = iliad_y_centers(pgdata)
     #2. scholia areas
     areas = scholion_areas(pgdata)
-
+    
     #Constraints:
     # 1. If the corresponding y is less than the top of the exterior zone and greater than the bottom,
     #    then the  x value lies between 0 and the width of the whole page.
@@ -84,10 +86,26 @@ function secondmodel_traditional_layout(pgdata::PageData, new_ys::Vector{Float64
     # 3. For recto pages x is between the width of the exterior zone and the width of the whole page
     # 4. For verso pages x is between 0 and the width of th exterior zone
 
-    # Objective: Minimize height of scholia 
-
+    # Objective: Find minimum of scholia and iliad centroid distance
+    
 end
+"""Recursive helper function for secondmodel_traditional_layout. Individually optimizes
+each scholion and uses the return value as part of the constraints.
+"""
+function secondmodel_helper(iliad__centroids::Vector{Float64}, iliad_y_centroids::Vector{Float64}, areas::Vector{Float64}, i::Int64)
+    #base case is the first text-scholion pair 
+    if i = 0
+        return 0
+    else
+        model = Model(HiGHS.Optimizer)
+        @variable(model, sch_y[i], sch_x[i], sch_h[i])
 
+        @constraint(model, domainlimits, begin 0 <= schy_y <= 1, 0 <= sch_x <= 1 end)
+        @constraint(model, cumulativeconstraint, sch_y >= secondmodel_helper(iliad_x_centroids, iliad_y_centroids, areas, i-1))
+
+        @objective(model, Min, )
+    end
+end
 
 """For the given page, find the optimal placement
 of scholia under the assumptions of Churik's model.
