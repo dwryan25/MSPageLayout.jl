@@ -17,17 +17,20 @@ function traditional_score_page(pgdata::PageData; threshold = 0.1, siglum = "msA
     
     new_ys = model_traditional_layout(pgdata, siglum = siglum)
     orig = mainscholion_y_tops(pgdata)
-
-    for i in eachindex(new_ys)
-        topmargin = orig[i] + threshold
-        bottommargin = orig[i] - threshold
-        if bottommargin <= new_ys[i] <= topmargin
-            successes += 1
-        else
-            failures += 1
+    if new_ys !== nothing
+        for i in eachindex(new_ys)
+            topmargin = orig[i] + threshold
+            bottommargin = orig[i] - threshold
+            if bottommargin <= new_ys[i] <= topmargin
+                successes += 1
+            else
+                failures += 1
+            end
         end
+        return PageScore(pgdata.pageurn, successes, failures)
+    else 
+        return PageScore(pgdata.pageurn, 0, 0)
     end
-    return PageScore(pgdata.pageurn, successes, failures)
 end
 
 """Score an entire manuscript, optimizing the y value layout for each page
@@ -38,15 +41,15 @@ function traditional_score_manuscript(manuscript::Codex)
     mspages = manuscript.pages
     scores = PageScore[]
     for page in mspages
+        println(page.urn)
         pgdata = pageData(page.urn)
         if pgdata === nothing
             continue
         else
-        score = traditional_score_page(pgdata, threshold = 0.05)
-        push!(scores, score)
+            score = traditional_score_page(pgdata, threshold = 0.05)
+            push!(scores, score)
         end
     end
-
     return scores
 end
 """Score number of scholia correctly placed on page using Churik's model.
