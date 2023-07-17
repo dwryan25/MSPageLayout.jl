@@ -10,17 +10,14 @@ end
 """Score number of scholia correctly placed on page using traditional model. Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)
 """
-function traditional_score(pgdata::PageData; threshold = 0.1, siglum = "msA")::PageScore
+function traditional_score_page(pgdata::PageData; threshold = 0.1, siglum = "msA")::PageScore
     #set successes and failures to zero
     successes = 0
     failures = 0
-    if isnothing(siglum)
-        new_ys = model_traditional_layout(pgdata)
-        orig = scholion_y_tops(pgdata)
-    else
-        new_ys = model_traditional_layout(pgdata, siglum = "msA")
-        orig = mainscholion_y_tops(pgdata)
-    end
+    
+    new_ys = model_traditional_layout(pgdata, siglum = siglum)
+    orig = mainscholion_y_tops(pgdata)
+
     for i in eachindex(new_ys)
         topmargin = orig[i] + threshold
         bottommargin = orig[i] - threshold
@@ -33,6 +30,25 @@ function traditional_score(pgdata::PageData; threshold = 0.1, siglum = "msA")::P
     return PageScore(pgdata.pageurn, successes, failures)
 end
 
+"""Score an entire manuscript, optimizing the y value layout for each page
+and comparing to the original. Returns a vector of PageScores.
+$(SIGNATURES)
+"""
+function traditional_score_manuscript(manuscript::Codex)
+    mspages = manuscript.pages
+    scores = PageScore[]
+    for page in mspages
+        pgdata = pageData(page.urn)
+        if pgdata === nothing
+            continue
+        else
+        score = traditional_score_page(pgdata, threshold = 0.05)
+        push!(scores, score)
+        end
+    end
+
+    return scores
+end
 """Score number of scholia correctly placed on page using Churik's model.
 Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)
