@@ -49,7 +49,8 @@ export model_traditional_layout
 #functions on scoring
 export PageScore
 
-export traditional_score
+export traditional_score_page
+export traditional_score_manuscript
 
 #=
 export PageSkeleton

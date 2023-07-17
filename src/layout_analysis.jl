@@ -92,18 +92,23 @@ end
 """Recursive helper function for secondmodel_traditional_layout. Individually optimizes
 each scholion and uses the return value as part of the constraints.
 """
-function secondmodel_helper(iliad__centroids::Vector{Float64}, iliad_y_centroids::Vector{Float64}, areas::Vector{Float64}, i::Int64)
+function secondmodel_recto_helper(pgdata::PageData, iliad_x_centroids::Vector{Float64}, iliad_y_centroids::Vector{Float64}, areas::Vector{Float64}, i::Int64)
     #base case is the first text-scholion pair 
-    if i = 0
+    if i == 0
         return 0
     else
         model = Model(HiGHS.Optimizer)
         @variable(model, sch_y[i], sch_x[i], sch_h[i])
 
-        @constraint(model, domainlimits, begin 0 <= schy_y <= 1, 0 <= sch_x <= 1 end)
-        @constraint(model, cumulativeconstraint, sch_y >= secondmodel_helper(iliad_x_centroids, iliad_y_centroids, areas, i-1))
+        @constraint(model, ylimits, 0 <= schy_y[i] <= 1)
+        @constraint(model, xlimits, 0 <= sch_x[i] <= 1)
+        @constraint(model, cumulativeconstraint, sch_y >= secondmodel_recto_helper(pgdata, iliad_x_centroids, iliad_y_centroids, areas, i-1))
+       
+        @objective(model, Min, sqrt((sch_y[i] - iliad_y_centroids[i])^2 + (sch_x[i] - iliad_x_centroids[i])^2))
 
-        @objective(model, Min, )
+        optimize!(model)
+
+        return sch_y[i]
     end
 end
 

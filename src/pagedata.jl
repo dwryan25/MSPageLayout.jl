@@ -152,6 +152,35 @@ function iliad_x_centers(pgdata::PageData; digits = 3)
     raw = map(pr -> iliad_x_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
     map(xcent -> round(xcent, digits = digits), raw)
 end
+"""Compute all the center x values for scholion text on a page
+$(SIGNATURES)
+"""
+function scholion_x_centers(pgdata::PageData; digits = 3)
+    scale = pagescale_x(pgdata, digits = digits)
+    offset = pageoffset_left(pgdata, digits = digits)
+    raw = map(pr -> scholion_x_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
+    map(xcent -> round(xcent, digits = digits), raw)
+end
+
+"""Compute all the center y values for iliad text on a page
+$(SIGNATURES)
+"""
+function iliad_y_centers(pgdata::PageData; digits = 3)
+    scale = pagescale_y(pgdata, digits = digits)
+    offset = pageoffset_top(pgdata, digits = digits)
+    raw = map(pr -> iliad_y_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
+    map(ycent -> round(ycent, digits = digits), raw)
+end
+
+"""Compute all the center y values for scholion text on a page
+$(SIGNATURES)
+"""
+function scholion_y_centers(pgdata::PageData; digits = 3)
+    scale = pagescale_y(pgdata, digits = digits)
+    offset = pageoffset_top(pgdata, digits = digits)
+    raw = map(pr -> scholion_y_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
+    map(ycent -> round(ycent, digits = digits), raw)
+end
 
 """Find top of page bound on documentary image.
 $(SIGNATURES)
