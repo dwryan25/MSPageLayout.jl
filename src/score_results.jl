@@ -41,7 +41,6 @@ function traditional_score_manuscript(manuscript::Codex)
     mspages = manuscript.pages
     scores = PageScore[]
     for page in mspages
-        println(page.urn)
         pgdata = pageData(page.urn)
         if pgdata === nothing
             continue

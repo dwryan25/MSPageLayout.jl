@@ -15,7 +15,11 @@ $(SIGNATURES)
 function scholion_height(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     b = scholion_y_bottom(textpair, digits = digits, scale = scale, offset = offset)
     t = scholion_y_top(textpair, digits = digits, scale = scale, offset = offset)
-    round(b - t, digits = digits)
+    if isnothing(b) || isnothing(t)
+        nothing
+    else 
+        round(b - t, digits = digits)
+    end
 end
 """Compute width of scholion text box
 $(SIGNATURES)
@@ -48,14 +52,23 @@ $(SIGNATURES)
 function scholion_x_center(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     r = scholion_x_right(textpair, digits = digits, scale = scale, offset = offset)
     l = scholion_x_left(textpair, digits = digits, scale = scale, offset = offset)
-    round((r - l) / 2, digits = digits)
+    if isnothing(l) || isnothing(r)
+        nothing
+    else 
+        round((r - l) / 2, digits = digits)
+    end
 end
 
 """Compute top edge of `scholionbox`.
 $(SIGNATURES)
 """
 function scholion_y_top(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
-    round((imagefloats(textpair.scholionbox, digits = digits)[2] - offset) * scale, digits = digits)
+    y = imagefloats(textpair.scholionbox, digits = digits)[2]
+    if isnothing(y)
+        nothing
+    else   
+        round((y - offset) * scale, digits = digits)
+    end
 end
 
 """Compute bottom edge of `scholionbox` within page zone.
@@ -63,7 +76,11 @@ $(SIGNATURES)
 """
 function scholion_y_bottom(textpair::BoxedTextPair; digits = 3, scale = 1.0, offset = 0)
     floats = imagefloats(textpair.scholionbox, digits = digits)
-    round(((floats[2]-offset) * scale) + (floats[4]*scale), digits = digits)
+    if isnothing(floats)
+        nothing
+    else 
+        round(((floats[2]-offset) * scale) + (floats[4]*scale), digits = digits)
+    end
 end
 
 

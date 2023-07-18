@@ -51,7 +51,8 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
 
     optimize!(model)
     solution_summary(model)
-    if termination_status(model) != OPTIMAL 
+    status = termination_status(model) 
+    if status != OPTIMAL 
         return nothing
     end
     stringvalue = join(round.(value.(yval), digits = digits), ",")
