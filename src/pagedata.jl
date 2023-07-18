@@ -82,7 +82,13 @@ function iliad_y_tops(pgdata::PageData; digits = 3)
     offset = pageoffset_top(pgdata, digits = digits)
     scale = pagescale_y(pgdata, digits = digits)
     raw = map(pr -> iliad_y_top(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(f -> round(f, digits = digits), raw)
+    map(raw) do f
+        if isnothing(f)
+            nothing 
+        else
+            round(f, digits = digits)
+        end
+    end
 end
 
 
@@ -93,7 +99,13 @@ function scholion_y_tops(pgdata::PageData; digits = 3)
     offset = pageoffset_top(pgdata, digits = digits)
     scale = pagescale_y(pgdata, digits = digits)
     raw = map(pr -> scholion_y_top(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(f -> round(f, digits = digits), raw)
+    map(raw) do f
+        if isnothing(f)
+            nothing
+        else 
+            round(f, digits = digits)
+        end
+    end
 end
 """Compute top 'y' value relative to page box for main scholia on pageData
 $(SIGNATURES)
@@ -103,7 +115,13 @@ function mainscholion_y_tops(pgdata::PageData; digits = 3)
     offset = pageoffset_top(pgdata, digits = digits)
     scale = pagescale_y(pgdata, digits = digits)
     raw = map(pr -> scholion_y_top(pr, digits = digits, scale = scale, offset = offset), texts)
-    map(f ->round(f, digits = digits), raw)
+    map(raw) do f
+        if isnothing(f)
+            nothing
+        else 
+            round(f, digits = digits)
+        end
+    end
 end
 
 """Compute height of scholia on page.
@@ -113,7 +131,14 @@ function scholion_heights(pgdata::PageData; digits = 3,)
     scale = pagescale_y(pgdata, digits = digits)
     offset = pageoffset_top(pgdata, digits = digits)
     raw = map(pr -> scholion_height(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(ht -> round(ht, digits = digits), raw)
+    #map(ht -> round(ht, digits = digits), raw)
+    map(raw) do ht
+        if isnothing(ht)
+            nothing
+        else 
+            round(ht, digits = digits)
+        end
+    end
 end
 """Compute width of scholia on page.
 $(SIGNATURES)
@@ -122,7 +147,13 @@ function scholion_widths(pgdata::PageData; digits = 3)
     scale = pagescale_x(pgdata, digits = digits)
     offset = pageoffset_left(pgdata, digits = digits)
     raw = map(pr -> scholion_width(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(ht-> round(ht, digits = digits), raw)
+    map(raw) do wd
+        if isnothign(wd)
+            nothing
+        else
+            round(wd, digits = digits)
+        end
+    end
 end
 """Computes the area of all scholia on a page
 $(SIGNATURES)
@@ -137,7 +168,11 @@ function scholion_areas(pgdata::PageData; digits = 3)
     end
     areas = []
     for i in 1:n
-        push!(areas, round(widths[i] * lengths[i], digits = digits))
+        if isnothing(widths[i]) || isnothing(lengths[i])
+            push!(areas, nothing)
+        else 
+            push!(areas, round(widths[i] * lengths[i], digits = digits))
+        end
     end
     
     return areas
@@ -150,7 +185,13 @@ function iliad_x_centers(pgdata::PageData; digits = 3)
     scale = pagescale_x(pgdata, digits = digits)
     offset = pageoffset_left(pgdata, digits = digits)
     raw = map(pr -> iliad_x_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(xcent -> round(xcent, digits = digits), raw)
+    map(raw) do xcent
+        if isnothing(xcent)
+            nothing
+        else 
+            round(xcent, digits = digits)
+        end
+    end
 end
 """Compute all the center x values for scholion text on a page
 $(SIGNATURES)
@@ -159,7 +200,13 @@ function scholion_x_centers(pgdata::PageData; digits = 3)
     scale = pagescale_x(pgdata, digits = digits)
     offset = pageoffset_left(pgdata, digits = digits)
     raw = map(pr -> scholion_x_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(xcent -> round(xcent, digits = digits), raw)
+    map(raw) do xcent
+        if isnothing(xcent)
+            nothing
+        else 
+            round(xcent, digits = digits)
+        end
+    end
 end
 
 """Compute all the center y values for iliad text on a page
@@ -169,7 +216,13 @@ function iliad_y_centers(pgdata::PageData; digits = 3)
     scale = pagescale_y(pgdata, digits = digits)
     offset = pageoffset_top(pgdata, digits = digits)
     raw = map(pr -> iliad_y_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(ycent -> round(ycent, digits = digits), raw)
+    map(raw) do ycent
+        if isnothing(ycent)
+            nothing
+        else 
+            round(ycent, digits = digits)
+        end
+    end
 end
 
 """Compute all the center y values for scholion text on a page
@@ -179,7 +232,13 @@ function scholion_y_centers(pgdata::PageData; digits = 3)
     scale = pagescale_y(pgdata, digits = digits)
     offset = pageoffset_top(pgdata, digits = digits)
     raw = map(pr -> scholion_y_center(pr, digits = digits, scale = scale, offset = offset), pgdata.textpairs)
-    map(ycent -> round(ycent, digits = digits), raw)
+    map(raw) do ycent
+        if isnothing(ycent)
+            nothing
+        else 
+            round(ycent, digits = digits)
+        end
+    end
 end
 
 """Find top of page bound on documentary image.
