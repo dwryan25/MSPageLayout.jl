@@ -17,7 +17,9 @@ function traditional_score_page(pgdata::PageData; threshold = 0.1, siglum = "msA
     
     new_ys = model_traditional_layout(pgdata, siglum = siglum)
     orig = mainscholion_y_tops(pgdata)
-
+    if new_ys === nothing
+        return PageScore(pgdata.pageurn, 0, 0)
+    end
     for i in eachindex(new_ys)
         topmargin = orig[i] + threshold
         bottommargin = orig[i] - threshold

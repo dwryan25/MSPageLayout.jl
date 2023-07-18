@@ -50,6 +50,10 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
     @objective(model, Min, sum(yval[i] - iliad_ys[i] for i in 1:n))
 
     optimize!(model)
+    status = termination_status(model)
+    if status != OPTIMAL 
+        return nothing
+    end
     solution_summary(model)
     stringvalue = join(round.(value.(yval), digits = digits), ",")
     opt_ys= split(stringvalue, ",")

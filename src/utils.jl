@@ -9,6 +9,7 @@ function imagefloats(imgu::Cite2Urn; digits = 3)
         floats = map(roi -> parse(Float64, roi), parts)
         map(num -> round(num, digits=digits), floats)
     else
-        throw(ArgumentError("""Invalid region of interest in urn `$(imgu)`:  expression must have four comma-separated parts.""")) 
+        [0,0,0,0]
+        #throw(ArgumentError("""Invalid region of interest in urn `$(imgu)`:  expression must have four comma-separated parts.""")) 
     end
 end
