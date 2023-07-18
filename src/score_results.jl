@@ -19,6 +19,10 @@ function traditional_score_page(pgdata::PageData; threshold = 0.1, siglum = "msA
     orig = mainscholion_y_tops(pgdata)
     if new_ys !== nothing
         for i in eachindex(new_ys)
+            if isnothing(orig[i]) || isnothing(new_ys[i])
+                failures += 1
+                continue
+            end
             topmargin = orig[i] + threshold
             bottommargin = orig[i] - threshold
             if bottommargin <= new_ys[i] <= topmargin
