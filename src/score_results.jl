@@ -55,6 +55,21 @@ function traditional_score_manuscript(manuscript::Codex)
     end
     return scores
 end
+"""Computes the ratio of successful pages to all pages. Benchmark parameter specifies how many successes a PageScore
+needs to consider the page a success.
+"""
+function successes_ratio(scores::Vector{PageScore}, benchmark::Float64)
+    successful_pages::Int64
+    total_pages = length(scores)
+    for score in scores
+        s = score.successes
+        f = score.failures
+        if s / (s + f) >= benchmark
+            successful_pages += 1
+        end
+    end
+    return successful_pages / total_pages
+end
 """Score number of scholia correctly placed on page using Churik's model.
 Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)
