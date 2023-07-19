@@ -55,6 +55,22 @@ function traditional_score_manuscript(manuscript::Codex)
     end
     return scores
 end
+"""Creates a vector of PageScores by reading data from a score file.
+$(SIGNATURES)
+"""
+function get_score_vector(filename::String)
+    scores = PageScore[]
+    open(filename) do file
+        for line in eachline(file)
+            if startswith(line, "Header:" )
+                continue
+            else
+                push!(scores, line)
+            end        
+        end
+    end
+    return scores
+end
 """Computes the ratio of successful pages to all pages. Benchmark parameter specifies how many successes a PageScore
 needs to consider the page a success.
 """

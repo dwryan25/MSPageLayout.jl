@@ -1,5 +1,4 @@
-First score of Venetus A manuscript using y-axis only model of traditional layout
-
+Header:First score of Venetus A manuscript using y-axis only model of traditional layout. Threshold: 0.05
 
 PageScore(urn:cite2:hmt:msA.v1:12r, 4, 8)
 PageScore(urn:cite2:hmt:msA.v1:12v, 0, 0)
