@@ -74,7 +74,6 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
 end
 
 
-
 """Compute top `y` value relative to page box for all *Iliad* lines on page.
 $(SIGNATURES)
 """

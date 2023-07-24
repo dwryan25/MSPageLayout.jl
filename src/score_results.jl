@@ -51,6 +51,7 @@ function traditional_score_manuscript(manuscript::Codex)
 
     return scores
 end
+
 """Score number of scholia correctly placed on page using Churik's model.
 Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)

@@ -93,6 +93,7 @@ function secondmodel_traditional_layout(pgdata::PageData, new_ys::Vector{Float64
     # Objective: Find minimum of scholia and iliad centroid distance
     
 end
+
 """Recursive helper function for secondmodel_traditional_layout. Individually optimizes
 each scholion and uses the return value as part of the constraints.
 """

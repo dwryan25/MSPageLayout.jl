@@ -24,7 +24,7 @@ include("pagezones.jl")
 
 
 export PageData, pageData
-# functions page PageData:
+# functions on page PageData:
 export scholion_y_tops, scholion_y_centers, scholion_heights, mainscholion_y_tops, scholion_widths, scholion_areas
 export iliad_y_tops, iliad_x_centers
 export pageoffset_top, pageoffset_left
@@ -46,23 +46,10 @@ export exteriorzone_width, exteriorzone_y_bottom, exteriorzone_y_top
 #functions on layout_analysis
 export model_traditional_layout
 
-#functions on scoring
-export PageScore
 
+export PageScore
+#functions on scoring
 export traditional_score_page
 export traditional_score_manuscript
-
-#=
-export PageSkeleton
-export TSPair
-export PageLayout
-include("PageSkeleton.jl")
-include("TSPair.jl")
-include("PageLayout.jl")
-include("ZoneHelper.jl")
-include("TextDataHelper.jl")
-include("FinalPageData.jl")
-include("PageOptimizer.jl")
-=#
 
 end # module MSPageLayout
