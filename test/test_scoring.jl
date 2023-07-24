@@ -18,5 +18,10 @@ end
 
 
 @testset "Test scoring of page under Churik model" begin
-    
+    pgurn = Cite2Urn("urn:cite2:hmt:msA.v1:55r")
+    pgdata = pageData(pgurn)
+    score = churik_score(pgdata)
+    @test isa(score, PageScore)
+    mainscholia_count = 9
+    @test score.successes + score.failures == mainscholia_count
 end
