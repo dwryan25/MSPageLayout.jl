@@ -21,6 +21,7 @@ include("pagedata.jl")
 include("layout_analysis.jl")
 include("score_results.jl")
 include("pagezones.jl")
+include("churik_scores.jl")
 
 
 export PageData, pageData
