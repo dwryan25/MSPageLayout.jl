@@ -56,11 +56,16 @@ end
 and comparing to the original. Returns a vector of PageScores.
 $(SIGNATURES)
 """
-function traditional_score_manuscript(manuscript::Codex)
+function traditional_score_manuscript(manuscript::Codex, data = nothing)
+    data = if isnothing(data)
+        hmt_cex()
+    else 
+        data
+    end
     mspages = manuscript.pages
     scores = PageScore[]
     for page in mspages
-        pgdata = pageData(page.urn)
+        pgdata = pageData(page.urn, data = data)
         if pgdata === nothing
             continue
         else
@@ -76,16 +81,39 @@ end
 Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)
 """
-function churik_score(pgdata::PageData; threshhold = 0.1, siglum = "msA")::PageScore
+function churik_score(pgdata::PageData; siglum = "msA")::PageScore
     scalefactor = pagescale_y(pgdata)
     offset = pageoffset_top(pgdata)
     topthreshhold = exteriorzone_y_bottom(pgdata)
     bottomthreshhold = exteriorzone_y_bottom(pgdata)
     
     tfscores = map(pgdata.textpairs) do pr
-        churik_model_matches(pr, scalefactor, offset, topthreshhold, bottomthreshhold)
+        if workid(pr) == siglum
+            churik_model_matches(pr, scalefactor, offset, topthreshhold, bottomthreshhold)
+        end
     end
     successes = filter(tf -> tf == true, tfscores)
     failures = filter(tf -> tf == false, tfscores)
     PageScore(pgdata.pageurn, length(successes), length(failures))
+end
+
+function churik_score_manuscript(manuscript::Codex, data = nothing)
+    data = if isnothing(data)
+        hmt_cex()
+    else 
+        data
+    end
+    mspages = manuscript.pages
+    scores = PageScore[]
+    for page in mspages
+        pgdata = pageData(page.urn, data = data)
+        if pgdata === nothing
+            continue
+        else
+        score = churik_score(pgdata)
+        push!(scores, score)
+        end
+    end
+
+    return scores
 end
