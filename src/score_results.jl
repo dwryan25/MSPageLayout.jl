@@ -77,6 +77,15 @@ Optionally specific siglum of scholia to model. If `siglum` is `nothing`, includ
 $(SIGNATURES)
 """
 function churik_score(pgdata::PageData; threshhold = 0.1, siglum = "msA")::PageScore
-   
-    nothing
+    scalefactor = pagescale_y(pgdata)
+    offset = pageoffset_top(pgdata)
+    topthreshhold = exteriorzone_y_bottom(pgdata)
+    bottomthreshhold = exteriorzone_y_bottom(pgdata)
+    
+    tfscores = map(pgdata.textpairs) do pr
+        churik_model_matches(pr, scalefactor, offset, topcutoff, bottomcutoff)
+    end
+    successes = filter(tf -> tf == true, tfscores)
+    failures = filter(tf -> tf == false, tfscores)
+    PageScore(pgdata.pageurn, length(successes), length(failures))
 end

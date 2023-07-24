@@ -28,3 +28,15 @@ function scholionzone(scholion_y, topthresh, bottomthresh)
         :middle
     end
 end
+
+"""True if zone placement matches for scholion and *Iliad* line.
+$(SIGNATURES)
+"""
+function churik_model_matches(pr::BoxedTextPair, scalefactor, offset, topcutoff, bottomcutoff)
+    iliadregion = iliadzone(pr.lineindex)
+
+    ytop = scholion_y_top(pr, scale = scalefactor, offset = offset)
+    scholionregion = scholionzone(ytop, topcutoff, bottomcutoff)
+    scholionregion == iliadregion
+end
+
