@@ -61,6 +61,10 @@ md"""# Diagram page layout"""
 # ╔═╡ 0e71905f-081e-4615-bee8-247ee9cbfa2e
 md"""*Width of image (pixels)* $(@bind w confirm(Slider(200:50:800, show_value=true)))"""
 
+# ╔═╡ 34409b3f-cb5c-409c-bebf-03befe1b6492
+md"""*Set image transparency* $(@bind alpha Slider(0:0.1:1.0, show_value=true, 
+default=0.5))"""
+
 # ╔═╡ dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 html"""
 <br/><br/><br/><br/><br/><br/>
@@ -230,6 +234,7 @@ function plotHypothesisList(scholia, left, ht, colorname, insets = 1; siglum = "
 end
 
 # ╔═╡ 31caf334-aede-4171-83b7-d26c93c131e1
+# ╠═╡ show_logs = false
 if isnothing(pgdata) || isempty(pgdata.textpairs) 
 	md""
 else
@@ -289,6 +294,9 @@ end
 # ╔═╡ 721e3e0a-48d2-4569-895e-77e519bbf273
 pgimg = pageimage(pg, pagerois)
 
+# ╔═╡ 35f39a9d-4362-484d-a4bf-8d284ea6aab3
+screened = RGBA.(pgimg, alpha)
+
 # ╔═╡ Cell order:
 # ╟─d2424f38-d821-44b6-8fd9-365ee695f324
 # ╟─36927b11-2363-4d84-89a3-77cb4a63939a
@@ -299,6 +307,8 @@ pgimg = pageimage(pg, pagerois)
 # ╟─51937435-bb4e-4801-bfe0-740781475ad2
 # ╟─31caf334-aede-4171-83b7-d26c93c131e1
 # ╟─73f0101c-12a1-4237-8fb2-1699bcb46383
+# ╟─34409b3f-cb5c-409c-bebf-03befe1b6492
+# ╠═35f39a9d-4362-484d-a4bf-8d284ea6aab3
 # ╠═721e3e0a-48d2-4569-895e-77e519bbf273
 # ╟─82ed9fa1-75a3-4c60-84db-f1f75e049add
 # ╟─dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
