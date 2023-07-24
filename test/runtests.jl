@@ -2,6 +2,7 @@ using MSPageLayout
 using Test
 
 using CitableObject, CitableText
+using HmtArchive.Analysis
 
 include("test_pagedata.jl")
 include("test_optimization.jl")

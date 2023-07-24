@@ -7,6 +7,26 @@ struct PageScore
     failures::Int
 end
 
+
+
+"""Serialize score for a single page.
+$(SIGNATURES)
+"""
+function delimited(pgScore::PageScore; delimiter = ",")
+    string(pgScore.pgurn, delimiter, pgScore.successes, delimiter, pgScore.failures)
+end
+
+"""Instantiate a single `PageScore` object freom a delimited-text source.
+$(SIGNATURES)
+"""
+function resultsfromdelimited(txt; delimiter = ",")
+    columns = split(txt, delimiter)
+    u = Cite2Urn(columns[1])
+    successes = parse(Int, columns[2])
+    failures = parse(Int, columns[3])
+    PageScore(u, successes, failures)
+end
+
 """Score number of scholia correctly placed on page using traditional model. Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)
 """

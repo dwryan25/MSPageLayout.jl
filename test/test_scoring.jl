@@ -1,5 +1,5 @@
 @testset "Test scoring of page under traditional model" begin
-    using HmtArchive.Analysis
+    
     pgurn = Cite2Urn("urn:cite2:hmt:msA.v1:55r")
     pgdata = pageData(pgurn)
     results = traditional_score_page(pgdata)

@@ -51,5 +51,6 @@ export PageScore
 #functions on scoring
 export traditional_score_page
 export traditional_score_manuscript
+export delimited, resultsfromdelimited
 
 end # module MSPageLayout
