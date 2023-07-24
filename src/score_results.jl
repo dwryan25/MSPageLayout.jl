@@ -83,7 +83,7 @@ function churik_score(pgdata::PageData; threshhold = 0.1, siglum = "msA")::PageS
     bottomthreshhold = exteriorzone_y_bottom(pgdata)
     
     tfscores = map(pgdata.textpairs) do pr
-        churik_model_matches(pr, scalefactor, offset, topcutoff, bottomcutoff)
+        churik_model_matches(pr, scalefactor, offset, topthreshhold, bottomthreshhold)
     end
     successes = filter(tf -> tf == true, tfscores)
     failures = filter(tf -> tf == false, tfscores)
