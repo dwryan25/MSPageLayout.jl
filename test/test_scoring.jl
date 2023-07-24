@@ -10,10 +10,10 @@
     @test failures > 0
     @test successes + failures == length(mainscholia)
 
-    data = hmt_cex()
+    #=data = hmt_cex()
     va = hmt_codices()[6]
-    #@test_broken traditional_score_manuscript(va, data) === nothing
-
+    @test_broken traditional_score_manuscript(va, data) === nothing
+    =#
 end
 
 

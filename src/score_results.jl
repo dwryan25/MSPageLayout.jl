@@ -120,7 +120,7 @@ function churik_score(pgdata::PageData; siglum = "msA")::PageScore
     bottomthreshhold = exteriorzone_y_bottom(pgdata)
     
     tfscores = map(pgdata.textpairs) do pr
-        if workid(pr) == siglum
+        if workid(pr.scholion) == siglum
             churik_model_matches(pr, scalefactor, offset, topthreshhold, bottomthreshhold)
         end
     end
