@@ -56,16 +56,12 @@ end
 and comparing to the original. Returns a vector of PageScores.
 $(SIGNATURES)
 """
-function traditional_score_manuscript(manuscript::Codex, data = nothing)
-    data = if isnothing(data)
-        hmt_cex()
-    else 
-        data
-    end
+function traditional_score_manuscript(manuscript::Codex)
+    hmtdata = hmt_cex()
     mspages = manuscript.pages
     scores = PageScore[]
     for page in mspages
-        pgdata = pageData(page.urn, data = data)
+        pgdata = pageData(page.urn, data = hmtdata)
         if pgdata === nothing
             continue
         else
@@ -88,7 +84,7 @@ function churik_score(pgdata::PageData; siglum = "msA")::PageScore
     bottomthreshhold = exteriorzone_y_bottom(pgdata)
     
     tfscores = map(pgdata.textpairs) do pr
-        if workid(pr) == siglum
+        if workid(pr.scholion) == siglum
             churik_model_matches(pr, scalefactor, offset, topthreshhold, bottomthreshhold)
         end
     end
@@ -97,16 +93,12 @@ function churik_score(pgdata::PageData; siglum = "msA")::PageScore
     PageScore(pgdata.pageurn, length(successes), length(failures))
 end
 
-function churik_score_manuscript(manuscript::Codex, data = nothing)
-    data = if isnothing(data)
-        hmt_cex()
-    else 
-        data
-    end
+function churik_score_manuscript(manuscript::Codex)
+    hmtdata = hmt_cex()
     mspages = manuscript.pages
     scores = PageScore[]
     for page in mspages
-        pgdata = pageData(page.urn, data = data)
+        pgdata = pageData(page.urn, data = hmtdata)
         if pgdata === nothing
             continue
         else
