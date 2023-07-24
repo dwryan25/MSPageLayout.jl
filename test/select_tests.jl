@@ -4,6 +4,7 @@ Pkg.activate("..")
 using MSPageLayout
 
 using CitableObject, CitableText
+using HmtArchive.Analysis
 
 
 using Test

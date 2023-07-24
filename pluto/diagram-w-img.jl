@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.26
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -22,8 +22,17 @@ begin
 	using Luxor
 	Pkg.add("Colors")
 	using Colors
+	Pkg.add("FileIO")
+	using FileIO
+	Pkg.add("Images")
+	using Images
+	Pkg.add("Downloads")
+	using Downloads
 	Pkg.add("PlutoUI")
 	using PlutoUI
+
+
+	
 	Pkg.add("HmtArchive")
 	using HmtArchive.Analysis
 	Pkg.add("CitableObject")
@@ -32,6 +41,8 @@ begin
 	using CitableText
 	Pkg.add("CitablePhysicalText")
 	using CitablePhysicalText
+	Pkg.add("CitableImage")
+	using CitableImage
 
 	Pkg.add(url = "https://github.com/dwryan25/MSPageLayout.jl")
 	using MSPageLayout
@@ -41,11 +52,18 @@ begin
 	Pkg.status()
 end
 
+# ╔═╡ d2424f38-d821-44b6-8fd9-365ee695f324
+md"*The following hidden cell sets up the Julia environment.*"
+
 # ╔═╡ 874b7016-1e70-11ee-06bd-6dffcdd850d4
 md"""# Diagram page layout"""
 
 # ╔═╡ 0e71905f-081e-4615-bee8-247ee9cbfa2e
 md"""*Width of image (pixels)* $(@bind w confirm(Slider(200:50:800, show_value=true)))"""
+
+# ╔═╡ 34409b3f-cb5c-409c-bebf-03befe1b6492
+md"""*Set image transparency* $(@bind alpha Slider(0:0.1:1.0, show_value=true, 
+default=0.5))"""
 
 # ╔═╡ dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 html"""
@@ -101,6 +119,10 @@ data = hmt_cex()
 # ╔═╡ 2f4a3f9b-cf9d-4097-ad5d-20c3865eb392
 dse = hmt_dse(data)[1]
 
+# ╔═╡ 25441014-531a-498d-880e-a3a96dc90766
+# ╠═╡ show_logs = false
+pagerois = hmt_pagerois(data).index
+
 # ╔═╡ c249767b-d6f0-4a2a-9fa9-2f8a818baadb
 mss = hmt_codices(data)
 
@@ -126,14 +148,14 @@ pg
 pgdata = pageData(pg)
 
 # ╔═╡ 73f0101c-12a1-4237-8fb2-1699bcb46383
-mainscholia = filter(pr -> startswith(workcomponent(pr.scholion), "tlg5026.msA."), pgdata.textpairs)
+mainscholia = isnothing(pgdata) ? nothing : filter(pr -> startswith(workcomponent(pr.scholion), "tlg5026.msA."), pgdata.textpairs)
 
 # ╔═╡ 51937435-bb4e-4801-bfe0-740781475ad2
-isnothing(pgdata) || isempty(pgdata.textpairs) ? md"" : md"""*Display `n` scholia* $(@bind scholialimit Slider(1:length(mainscholia), show_value = true))"""
+isnothing(pgdata) || isempty(pgdata.textpairs) ? md"" : md"""*Display `n` scholia* $(@bind scholialimit Slider(1:length(mainscholia), default = length(mainscholia), show_value = true))"""
 
 # ╔═╡ 645ba380-a54f-4a79-ae0b-f24f59cc19b2
 "Difference in pixels of current display between top of image and top of page illustrated."
-topoffset = pageoffset_top(pgdata) * hpad
+topoffset = isnothing(pgdata) ? 0 : pageoffset_top(pgdata) * hpad
 
 # ╔═╡ 6a09fe3f-171c-48f3-bf77-210408819131
 pageheight = hpad - topoffset
@@ -201,7 +223,18 @@ function plotActualScholia(scholia, left, ht; siglum = "msA")
 	end
 end
 
+# ╔═╡ 8ded9235-9c80-4188-ac80-8a10f562663e
+"""Plot a list of scholia y values."""
+function plotHypothesisList(scholia, left, ht, colorname, insets = 1; siglum = "msA")
+	sethue("thistle")
+	actual_scholia_x = left + insets * 10
+	for s in scholia
+		circle(Point(actual_scholia_x, s), 3, :fill)
+	end
+end
+
 # ╔═╡ 31caf334-aede-4171-83b7-d26c93c131e1
+# ╠═╡ show_logs = false
 if isnothing(pgdata) || isempty(pgdata.textpairs) 
 	md""
 else
@@ -222,12 +255,50 @@ else
 
 	# Plot actual y locations of main scholia
 	plotActualScholia(mainscholia[1:scholialimit], scholia_left, h)
+
+
+	tradl_yvalues = model_traditional_layout(pgdata)
+	plotHypothesisList(tradl_yvalues, scholia_left, h, "thistle", 2)
 	
 end wpad hpad
 end
 
 
+# ╔═╡ c17328f0-1f50-4b81-af4f-8e286c952591
+md"> **Image service**"
+
+# ╔═╡ cf475337-52ea-406d-9a2a-2322f10630db
+imgsvcurl = "http://www.homermultitext.org/iipsrv"
+
+# ╔═╡ b678acd0-1cf5-4101-8029-ee0c446ce92b
+imgsvcroot = "/project/homer/pyramidal/deepzoom"
+
+# ╔═╡ aa12037b-f0d4-4769-a835-5b04557be557
+imgservice = IIIFservice(imgsvcurl, imgsvcroot)
+
+# ╔═╡ 82ed9fa1-75a3-4c60-84db-f1f75e049add
+function pageimage(pg, roituples; ht = 200)
+	prs = filter(pr -> pr[1] == pg, roituples)
+	if isempty(prs) 
+		nothing 
+	else
+		imgu = prs[1][2]
+		iifrequest = url(imgu, imgservice, ht = ht)
+		f = Downloads.download(iifrequest)
+		img = load(f)
+		rm(f)
+		img
+	end
+end
+
+# ╔═╡ 721e3e0a-48d2-4569-895e-77e519bbf273
+pgimg = pageimage(pg, pagerois)
+
+# ╔═╡ 35f39a9d-4362-484d-a4bf-8d284ea6aab3
+screened = RGBA.(pgimg, alpha)
+
 # ╔═╡ Cell order:
+# ╟─d2424f38-d821-44b6-8fd9-365ee695f324
 # ╟─36927b11-2363-4d84-89a3-77cb4a63939a
 # ╟─874b7016-1e70-11ee-06bd-6dffcdd850d4
 # ╟─a0ba2659-0b7b-482b-90f6-7baa83455722
@@ -236,6 +307,10 @@ end
 # ╟─51937435-bb4e-4801-bfe0-740781475ad2
 # ╟─31caf334-aede-4171-83b7-d26c93c131e1
 # ╟─73f0101c-12a1-4237-8fb2-1699bcb46383
+# ╟─34409b3f-cb5c-409c-bebf-03befe1b6492
+# ╠═35f39a9d-4362-484d-a4bf-8d284ea6aab3
+# ╠═721e3e0a-48d2-4569-895e-77e519bbf273
+# ╟─82ed9fa1-75a3-4c60-84db-f1f75e049add
 # ╟─dcce74ec-4d0c-4017-bcc5-58a6e07dbfe4
 # ╟─36973a8c-a31e-4d93-a61d-6906786ec079
 # ╟─30f78169-805d-4c38-89c4-115ca7e4f3e7
@@ -244,22 +319,28 @@ end
 # ╟─b405679c-ec6a-40e6-b8f5-44889233db9d
 # ╟─8ca6b28d-fb26-475b-9a1d-f8091c246037
 # ╠═df5ff74c-435c-43ad-9e70-d23418b28721
-# ╠═9e630977-1097-499f-bb7c-a79fb4e5cfb5
-# ╠═645ba380-a54f-4a79-ae0b-f24f59cc19b2
+# ╟─9e630977-1097-499f-bb7c-a79fb4e5cfb5
+# ╟─645ba380-a54f-4a79-ae0b-f24f59cc19b2
 # ╠═6a09fe3f-171c-48f3-bf77-210408819131
 # ╟─9bada34b-0748-474d-9a97-4dff4736540f
 # ╟─d167eb70-f471-444b-a1a7-abcb5dcc8471
 # ╠═2f4a3f9b-cf9d-4097-ad5d-20c3865eb392
+# ╠═25441014-531a-498d-880e-a3a96dc90766
 # ╟─c249767b-d6f0-4a2a-9fa9-2f8a818baadb
 # ╠═ff7fa129-f715-4fb6-9701-6e4ea442c8c6
 # ╠═a98de624-0c28-4fa1-811d-edf0b1b76150
 # ╠═748768ed-4eed-4132-9973-f2a400862611
 # ╠═063cafbb-5d63-4569-a45b-12e98a4b7649
 # ╟─0f42eb04-fc71-4bf9-9390-4b9022b82a4b
-# ╟─acd34a2d-5af9-4a8e-a277-bb9b47d72631
-# ╟─53def3ad-3d59-4004-9820-eca3ef3e9d52
+# ╠═acd34a2d-5af9-4a8e-a277-bb9b47d72631
+# ╠═53def3ad-3d59-4004-9820-eca3ef3e9d52
 # ╠═e5d696f5-1237-4c9e-ba3c-b732114d917b
 # ╠═2a739866-9153-4b74-95d7-13a210170f22
-# ╟─a6beb710-6b66-4a9c-97dd-69131294cabd
-# ╟─97843cce-f632-4681-9867-a547e8494ef7
-# ╠═954cb248-950d-4b4c-b82e-efd68a78bbd5
+# ╠═a6beb710-6b66-4a9c-97dd-69131294cabd
+# ╠═97843cce-f632-4681-9867-a547e8494ef7
+# ╟─954cb248-950d-4b4c-b82e-efd68a78bbd5
+# ╟─8ded9235-9c80-4188-ac80-8a10f562663e
+# ╟─c17328f0-1f50-4b81-af4f-8e286c952591
+# ╠═cf475337-52ea-406d-9a2a-2322f10630db
+# ╠═b678acd0-1cf5-4101-8029-ee0c446ce92b
+# ╠═aa12037b-f0d4-4769-a835-5b04557be557

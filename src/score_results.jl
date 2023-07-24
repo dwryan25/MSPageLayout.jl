@@ -7,6 +7,26 @@ struct PageScore
     failures::Int
 end
 
+
+
+"""Serialize score for a single page.
+$(SIGNATURES)
+"""
+function delimited(pgScore::PageScore; delimiter = ",")
+    string(pgScore.pgurn, delimiter, pgScore.successes, delimiter, pgScore.failures)
+end
+
+"""Instantiate a single `PageScore` object freom a delimited-text source.
+$(SIGNATURES)
+"""
+function resultsfromdelimited(txt; delimiter = ",")
+    columns = split(txt, delimiter)
+    u = Cite2Urn(columns[1])
+    successes = parse(Int, columns[2])
+    failures = parse(Int, columns[3])
+    PageScore(u, successes, failures)
+end
+
 """Score number of scholia correctly placed on page using traditional model. Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)
 """
@@ -41,11 +61,16 @@ end
 and comparing to the original. Returns a vector of PageScores.
 $(SIGNATURES)
 """
-function traditional_score_manuscript(manuscript::Codex)
+function traditional_score_manuscript(manuscript::Codex, data = nothing)
+    data = if isnothing(data)
+        hmt_cex()
+    else 
+        data
+    end
     mspages = manuscript.pages
     scores = PageScore[]
     for page in mspages
-        pgdata = pageData(page.urn)
+        pgdata = pageData(page.urn, data = data)
         if pgdata === nothing
             continue
         else
@@ -71,6 +96,7 @@ function get_score_vector(filename::String)
     end
     return scores
 end
+
 """Computes the ratio of successful pages to all pages. Benchmark parameter specifies how many successes a PageScore
 needs to consider the page a success.
 """
@@ -86,6 +112,7 @@ function successes_ratio(scores::Vector{PageScore}, benchmark::Float64)
     end
     return successful_pages / total_pages
 end
+
 """Score number of scholia correctly placed on page using Churik's model.
 Optionally specific siglum of scholia to model. If `siglum` is `nothing`, include all scholia.
 $(SIGNATURES)
@@ -126,3 +153,4 @@ function churik_score_manuscript(manuscript::Codex, data = nothing)
 
     return scores
 end
+

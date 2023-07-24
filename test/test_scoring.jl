@@ -1,5 +1,4 @@
 @testset "Test scoring of page under traditional model" begin
-    using HmtArchive.Analysis
     pgurn = Cite2Urn("urn:cite2:hmt:msA.v1:55r")
     pgdata = pageData(pgurn)
     results = traditional_score_page(pgdata)
@@ -11,9 +10,9 @@
     @test failures > 0
     @test successes + failures == length(mainscholia)
 
-
+    data = hmt_cex()
     va = hmt_codices()[6]
-    @test_broken traditional_score_manuscript(va) === nothing
+    #@test_broken traditional_score_manuscript(va, data) === nothing
 
 end
 

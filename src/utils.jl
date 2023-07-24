@@ -10,6 +10,5 @@ function imagefloats(imgu::Cite2Urn; digits = 3)::Union{Vector{Float64}, Nothing
         map(num -> round(num, digits=digits), floats)
     else
         nothing
-        #throw(ArgumentError("""Invalid region of interest in urn `$(imgu)`:  expression must have four comma-separated parts.""")) 
     end
 end

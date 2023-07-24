@@ -55,6 +55,10 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
     @objective(model, Min, sum(yval[i] - iliad_ys[i] for i in 1:n))
 
     optimize!(model)
+    status = termination_status(model)
+    if status != OPTIMAL 
+        return nothing
+    end
     solution_summary(model)
     status = termination_status(model) 
     if status != OPTIMAL 
@@ -99,6 +103,7 @@ function secondmodel_traditional_layout(pgdata::PageData, new_ys::Vector{Float64
     # Objective: Find minimum of scholia and iliad centroid distance
     
 end
+
 """Recursive helper function for secondmodel_traditional_layout. Individually optimizes
 each scholion and uses the return value as part of the constraints.
 """
