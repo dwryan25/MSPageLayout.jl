@@ -114,6 +114,9 @@ Optionally specific siglum of scholia to model. If `siglum` is `nothing`, includ
 $(SIGNATURES)
 """
 function churik_score(pgdata::PageData; siglum = "msA")::PageScore
+    if isempty(pgdata.textpairs)
+        return nothing
+    end
     scalefactor = pagescale_y(pgdata)
     offset = pageoffset_top(pgdata)
     topthreshhold = exteriorzone_y_bottom(pgdata)

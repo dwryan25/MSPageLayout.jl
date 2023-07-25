@@ -5,6 +5,7 @@ struct PageData
     textpairs::Vector{BoxedTextPair}
     imagezone::Cite2Urn
     folioside::String
+    zonepois::Vector{Float64}
 end
 
 """Construct a `PageData` object for the
@@ -21,6 +22,12 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
   
     scholia = filter(psg -> startswith(workcomponent(psg), "tlg5026"), textpassages)
     iliadlines = filter(psg -> startswith(workcomponent(psg), "tlg0012.tlg001"), textpassages)
+    #get the top and bottom y coords of the exterior zone
+    imglist = imagesfortext(iliadlines[1], dse)
+    imglist2 = imagesfortext(iliadlines[length(iliadlines)], dse)
+    midzonetop = parse(Float64, split(subref(imglist[1]), ",")[2])
+    midzonecoords = split(subref(imglist2[1]), ",")
+    midzonebottom = parse(Float64, midzonecoords[2]) + parse(Float64, midzonecoords[4])
     iliadstrings = map(ln -> string(ln), iliadlines)
     boxedpairs = map(scholia) do s
         iliadmatches = filter(pr -> pr[1] == s, allcommentary.commentary)
@@ -63,7 +70,8 @@ function pageData(pageurn::Cite2Urn; data = nothing)::Union{PageData, Nothing}
             pageurn,
             filter(pr -> ! isnothing(pr), boxedpairs),
             matchingrois[1][2],
-            pagetype
+            pagetype,
+            [midzonetop, midzonebottom]
         )
   
     else
