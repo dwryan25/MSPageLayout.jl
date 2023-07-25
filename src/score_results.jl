@@ -76,6 +76,16 @@ function traditional_score_manuscript(manuscript::Codex)
     end
     return scores
 end
+"""Saves a manuscript score in plaintext. Each PageScore field is delimited by the given delimiter
+$(SIGNATURES)
+"""
+function save_scores(scores::Vector{PageScore}, filename::String, delimiter = ",")
+    open(filename) do f
+        for score in scores
+            println(f, delimited(score, delimiter = delimiter))
+        end
+    end
+end
 """Creates a vector of PageScores by reading data from a score file.
 $(SIGNATURES)
 """
@@ -83,10 +93,10 @@ function get_score_vector(filename::String)
     scores = PageScore[]
     open(filename) do file
         for line in eachline(file)
-            if startswith(line, "Header:" )
+            if startswith(line, "#" )
                 continue
             else
-                push!(scores, line)
+                push!(resultsfromdelimited(line), line)
             end        
         end
     end
