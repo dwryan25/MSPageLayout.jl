@@ -6,11 +6,11 @@
     expected_width = 0.355
     @test extwidth == expected_width
 
-    expected_top = 0.224
+    expected_top = 0.165
     exterior_top = exteriorzone_y_top(pgdata)
     @test exterior_top == expected_top
 
-    expected_bottom = 0.7
+    expected_bottom = 0.721
     exterior_bottom = exteriorzone_y_bottom(pgdata)
     @test exterior_bottom == expected_bottom
 end

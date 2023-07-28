@@ -53,6 +53,6 @@ export PageScore
 export traditional_score_page
 export traditional_score_manuscript
 export delimited, resultsfromdelimited
-export churik_score
+export churik_score, churik_score_manuscript
 
 end # module MSPageLayout

@@ -33,9 +33,15 @@ end
 $(SIGNATURES)
 """
 function churik_model_matches(pr::BoxedTextPair, scalefactor, offset, topcutoff, bottomcutoff)
+    if isnothing(pr.lineindex)
+        return false
+    end
     iliadregion = iliadzone(pr.lineindex)
 
     ytop = scholion_y_top(pr, scale = scalefactor, offset = offset)
+    if isnothing(ytop)
+        return false
+    end
     scholionregion = scholionzone(ytop, topcutoff, bottomcutoff)
     scholionregion == iliadregion
 end

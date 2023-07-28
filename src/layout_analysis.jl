@@ -33,7 +33,12 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
     n = length(scholia_hts)
     totals = []
     for i in 1:n
-        push!(totals, sum(scholia_hts[1:i]))
+        if isnothing(scholia_hts[i])
+            push!(totals, sum(scholia_hts[1:i-1]))
+            scholia_hts[i] = 0
+        else
+            push!(totals, sum(scholia_hts[1:i]))
+        end
     end
     #= 
     Constraints: 
@@ -55,9 +60,14 @@ function model_traditional_layout(pgdata::PageData; siglum = "msA", digits = 3)
         return nothing
     end
     solution_summary(model)
+    status = termination_status(model) 
+    if status != OPTIMAL 
+        return nothing
+    end
     stringvalue = join(round.(value.(yval), digits = digits), ",")
     opt_ys= split(stringvalue, ",")
     opt_ys= map(x->round(parse(Float64, x), digits = digits), opt_ys)
+   
     return opt_ys
 end
 
