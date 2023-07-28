@@ -27,7 +27,7 @@ end
 """Compute the top y value of the exterior zone
 $(SIGNATURES)
 """
-function exteriorzone_y_top(pgdata::PageData; digits =3)
+function exteriorzone_y_top(pgdata::PageData; digits = 3)
     scale = pagescale_y(pgdata, digits = digits)
     offset = pageoffset_top(pgdata, digits = digits)
     

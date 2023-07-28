@@ -124,9 +124,6 @@ Optionally specific siglum of scholia to model. If `siglum` is `nothing`, includ
 $(SIGNATURES)
 """
 function churik_score(pgdata::PageData; siglum = "msA")::PageScore
-    if isempty(pgdata.textpairs)
-        return nothing
-    end
     scalefactor = pagescale_y(pgdata)
     offset = pageoffset_top(pgdata)
     topthreshhold = exteriorzone_y_bottom(pgdata)
@@ -139,7 +136,7 @@ function churik_score(pgdata::PageData; siglum = "msA")::PageScore
     end
     successes = filter(tf -> tf == true, tfscores)
     failures = filter(tf -> tf == false, tfscores)
-    PageScore(pgdata.pageurn, length(successes), length(failures))
+    return PageScore(pgdata.pageurn, length(successes), length(failures))
 end
 
 function churik_score_manuscript(manuscript::Codex)
@@ -148,11 +145,11 @@ function churik_score_manuscript(manuscript::Codex)
     scores = PageScore[]
     for page in mspages
         pgdata = pageData(page.urn, data = hmtdata)
-        if pgdata === nothing
+        if isnothing(pgdata) || isempty(pgdata.textpairs) || isempty(pgdata.zonepois)
             continue
         else
-        score = churik_score(pgdata)
-        push!(scores, score)
+            score = churik_score(pgdata)
+            push!(scores, score)
         end
     end
 
